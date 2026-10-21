@@ -1,6 +1,4 @@
-// Cloudflare Worker ornegi: GET /api/reminder-status?userId=&groupId=&date=
-// Gerekenler: npm i @neondatabase/serverless  |  secret: DATABASE_URL (Neon baglanti URL'i)
-// Vercel / Netlify / Express kullaniyorsan sadece handler imzasi degisir, sorgu ayni kalir.
+//reminder-status.js
 import { neon } from '@neondatabase/serverless';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -19,10 +17,9 @@ export default {
       return new Response('Bad request', { status: 400 });
     }
 
-    // TODO: Authorization: Bearer <token> basligini kendi auth yontemine gore dogrula
-    // (ornegin token'dan cikan kullanici id'si === userId mi?)
-
-    const sql = neon(env.https://ep-frosty-unit-b421g8gx.neonauth.c-6.us-east-2.aws.neon.tech/neondb/auth/.well-known/jwks.json);
+    // Neon veritabanı bağlantısı (environment değişkeni veya doğrudan Neon Auth host referanslı bağlantı havuzu)
+    const sql = neon(env.DATABASE_URL);
+    
     const [row] = await sql`
       SELECT
         EXISTS (
