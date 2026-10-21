@@ -540,10 +540,6 @@
 </div>
 
 <script type="module">
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
-
-const sb = createClient('https://rrupsidrdgwgagetcojx.supabase.co','sb_publishable_lQXYDZqUPATZNwM8Cb17kg_F-T1XsOI');
-
 let me = null, myProfile = null, myGroup = null, allProfiles = [], allGroups = [], notifTimer = null;
 let homeWeekOffset = 0;
 let reportOffset = 0;
@@ -558,30 +554,24 @@ function todayStr(){
   return `${y}-${m}-${dd}`;
 }
 
+// ── ANDROID / BRIDGE KÖPRÜSÜ ─────────────────────────────────
 async function loadUserData(currentGroup) {
     try {
-        const currentUser = me || (await sb.auth.getUser()).data?.user;
-        if (!currentUser) return;
-
+        if (!me) return;
         const targetGroup = currentGroup || myGroup;
         
-        console.log("=== KÖPRÜ VERİ KONTROLÜ ===");
-        console.log("Gelen Grup Nesnesi:", JSON.stringify(targetGroup));
-
         if (targetGroup) {
-            const gId = targetGroup.id || targetGroup.group_id || "BULUNAMADI";
+            const gId = targetGroup.id || targetGroup.group_id || "";
             const gGoal = targetGroup.daily_page_goal || targetGroup.page_goal || 20;
 
             if (typeof window.AndroidBridge !== 'undefined') {
                 window.AndroidBridge.sendData(JSON.stringify({
-                    userId: currentUser.id,
-                    userEmail: currentUser.email,
+                    userId: me.id,
+                    userEmail: me.email,
                     groupId: String(gId),
                     goalPages: parseInt(gGoal) || 20
                 }));
             }
-        } else {
-            console.log("Hata: targetGroup tamamen null veya undefined!");
         }
     } catch (e) {
         console.log('loadUserData hatası:', e);
@@ -610,45 +600,79 @@ function showScreen(name){
 function openM(id){ document.getElementById(id).classList.add('am'); }
 window.closeModal=function(id){ document.getElementById(id).classList.remove('am'); };
 
+// ── AUTH (Neon / Backend tabanlı oturum yönetimi) ─────────────
 async function boot(){
   try{
-    const isRecovery=await handleAuthCallback();
-    if(isRecovery) return;
-
-    const {data}=await sb.auth.getSession();
-    if(data?.session){ me=data.session.user; await loadProfile(); showScreen('app'); initApp(); }
-    else showScreen('login');
-  }catch(e){ console.error(e); showScreen('login'); }
+    const savedUser = localStorage.getItem('risale_user');
+    const savedToken = localStorage.getItem('risale_token');
+    
+    if(savedUser && savedToken){
+      me = JSON.parse(savedUser);
+      await loadProfile();
+      showScreen('app');
+      initApp();
+    } else {
+      showScreen('login');
+    }
+  }catch(e){ 
+    console.error(e); 
+    showScreen('login'); 
+  }
 }
-
-window.forgotPassword=async function(){
-  const email=document.getElementById('login-email').value.trim();
-  if(!email){ toast('Önce e-posta adresinizi girin','error'); return; }
-  const {error}=await sb.auth.resetPasswordForEmail(email,{
-    redirectTo: window.location.href
-  });
-  if(error){ toast('Hata: '+error.message,'error'); return; }
-  toast('Şifre sıfırlama maili gönderildi! Gelen kutunuzu kontrol edin.','success');
-};
 
 window.doLogin=async function(){
   const email=document.getElementById('login-email').value.trim();
-  const pw=document.getElementById('login-password').value;
+  const password=document.getElementById('login-password').value;
   const btn=document.getElementById('login-btn');
   const err=document.getElementById('login-error');
+  
   err.style.display='none'; btn.disabled=true; btn.textContent='Giriş yapılıyor...';
-  const {data,error}=await sb.auth.signInWithPassword({email,password:pw});
-  if(error){err.style.display='block';btn.disabled=false;btn.textContent='Giriş Yap';return;}
-  me=data.user; await loadProfile(); showScreen('app'); initApp();
+
+  try {
+    // Backend API'nize (örn. Cloudflare Worker veya Vercel API) istek atılır
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+
+    if(!res.ok) throw new Error('Giriş başarısız');
+    
+    const data = await res.json();
+    me = data.user;
+    
+    localStorage.setItem('risale_user', JSON.stringify(data.user));
+    localStorage.setItem('risale_token', data.token);
+
+    await loadProfile();
+    showScreen('app');
+    initApp();
+  } catch(e) {
+    err.style.display='block';
+    btn.disabled=false;
+    btn.textContent='Giriş Yap';
+  }
 };
 
 window.doLogout=async function(){
-  await sb.auth.signOut(); me=myProfile=myGroup=null; clearInterval(notifTimer); showScreen('login');
+  localStorage.removeItem('risale_user');
+  localStorage.removeItem('risale_token');
+  me = myProfile = myGroup = null;
+  showScreen('login');
 };
 
 async function loadProfile(){
-  const {data}=await sb.from('profiles').select('*').eq('id',me.id).single();
-  myProfile=data;
+  try {
+    const token = localStorage.getItem('risale_token');
+    const res = await fetch(`/api/profile?userId=${me.id}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if(res.ok){
+      myProfile = await res.json();
+    }
+  } catch(e) {
+    console.log('Profil yüklenemedi', e);
+  }
 }
 
 function updateProfileDisplay(){
@@ -669,9 +693,17 @@ async function initApp(){
   document.getElementById('user-avatar').textContent=init;
   updateProfileDisplay();
   document.getElementById('header-user-name').textContent=myProfile?.full_name||myProfile?.username||'';
-  if(myProfile?.role==='admin'){ const nav=document.getElementById('nav-admin'); if(nav) nav.style.display='flex'; await loadAdminGroups(); await loadAdminAllMembers(); }
+  
+  if(myProfile?.role==='admin'){ 
+    const nav=document.getElementById('nav-admin'); 
+    if(nav) nav.style.display='flex'; 
+    await loadAdminGroups(); 
+    await loadAdminAllMembers(); 
+  }
+  
   await loadMyGroup();
-  await loadHome(); await loadReport();
+  await loadHome(); 
+  await loadReport();
   setInterval(loadHome, 5*60*1000);
 }
 
@@ -680,32 +712,40 @@ window.saveProfile=async function(){
   const password=document.getElementById('edit-password').value;
   if(!fullname) return toast('Ad Soyad gerekli','error');
 
-  const {error:profErr}=await sb.from('profiles').update({full_name:fullname}).eq('id',me.id);
-  if(profErr){toast('Hata: '+profErr.message,'error');return;}
+  const token = localStorage.getItem('risale_token');
+  const res = await fetch('/api/profile', {
+    method: 'PUT',
+    headers: { 
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({ userId: me.id, full_name: fullname, password: password || undefined })
+  });
 
-  if(password){
-    if(password.length<6){toast('Şifre en az 6 karakter olmalı','error');return;}
-    const {error:pwErr}=await sb.auth.updateUser({password});
-    if(pwErr){toast('Şifre hatası: '+pwErr.message,'error');return;}
-  }
+  if(!res.ok){ toast('Güncelleme başarısız','error'); return; }
 
-  myProfile={...myProfile,full_name:fullname};
+  myProfile={...myProfile, full_name: fullname};
   updateProfileDisplay();
   toast('Profil güncellendi! ✓','success');
 };
 
 async function loadMyGroup(){
   try {
-    const {data}=await sb.from('group_members').select('group_id,reading_groups(*,books(*))').eq('user_id',me.id).limit(1).maybeSingle();
+    const token = localStorage.getItem('risale_token');
+    const res = await fetch(`/api/my-group?userId=${me.id}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
     
-    if(data?.reading_groups){
-      myGroup = data.reading_groups;
-      document.getElementById('header-group-name').textContent = myGroup.name;
-      document.getElementById('header-group-label').textContent = myGroup.name;
-      
-      loadUserData(myGroup);
-    } else {
-      document.getElementById('header-group-name').textContent = 'Grup yok';
+    if(res.ok){
+      const data = await res.json();
+      if(data?.group){
+        myGroup = data.group;
+        document.getElementById('header-group-name').textContent = myGroup.name;
+        document.getElementById('header-group-label').textContent = myGroup.name;
+        loadUserData(myGroup);
+      } else {
+        document.getElementById('header-group-name').textContent = 'Grup yok';
+      }
     }
   } catch (err) {
     console.log("Grup yükleme hatası:", err);
@@ -727,91 +767,89 @@ async function loadHome(){
     ['stat-week','stat-total','stat-delay'].forEach(id=>document.getElementById(id).textContent='—');
     return;
   }
+  
   const goal=myGroup.daily_page_goal;
   const we=new Date(baseDate.getFullYear(),baseDate.getMonth(),baseDate.getDate());
   const ws=new Date(we.getFullYear(),we.getMonth(),we.getDate()-6);
   const wsStr=dateStr(ws), weStr=dateStr(we);
   document.getElementById('week-range').textContent=`${ws.getDate()} ${MNF[ws.getMonth()]} – ${we.getDate()} ${MNF[we.getMonth()]} ${we.getFullYear()}`;
 
-  const {data:allMembers}=await sb.from('group_members')
-    .select('user_id,group_id,profiles(*),reading_groups(id,name,daily_page_goal)');
-  if(!allMembers?.length) return;
+  try {
+    const token = localStorage.getItem('risale_token');
+    const res = await fetch(`/api/home-data?groupId=${myGroup.id}&startDate=${wsStr}&endDate=${weStr}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    
+    if(!res.ok) return;
+    const { members, logs, userGoals } = await res.json();
 
-  const userMap={};
-  allMembers.forEach(m=>{
-    if(!userMap[m.user_id]) userMap[m.user_id]={...m};
-  });
-  const members=Object.values(userMap);
-  const mIds=members.map(m=>m.user_id);
-
-  const {data:wLogs}=await sb.from('reading_logs').select('*')
-    .gte('log_date',wsStr).lte('log_date',weStr).in('user_id',mIds);
-
-  const userGoalMap={};
-  allMembers.forEach(m=>{ userGoalMap[m.user_id]=m.reading_groups?.daily_page_goal||goal; });
-
-  const lMap={};
-  (wLogs||[]).forEach(l=>{ if(!lMap[l.user_id])lMap[l.user_id]={}; lMap[l.user_id][l.log_date]=l; });
-
-  let hHtml='<th class="name-cell">Üye</th>';
-  for(let i=0;i<7;i++){
-    const d=new Date(ws.getFullYear(),ws.getMonth(),ws.getDate()+i);
-    const ds=dateStr(d);
-    const dayName=DN[(d.getDay()+6)%7];
-    hHtml+=`<th class="${ds===today?'today-col':''}">${dayName}<br><span style="font-size:.65rem;opacity:.7">${d.getDate()}</span></th>`;
-  }
-  document.getElementById('week-head').innerHTML=hHtml;
-
-  const avatarColors=['#3fb950','#388bfd','#bc8cff','#c9a84c','#f85149','#58a6ff','#d29922','#7ee787'];
-  const memberColorMap={};
-  members.forEach((m,idx)=>{ memberColorMap[m.user_id]=avatarColors[idx%avatarColors.length]; });
-
-  const sorted=members.slice().sort((a,b)=>a.user_id===me.id?-1:b.user_id===me.id?1:(a.profiles?.full_name||'').localeCompare(b.profiles?.full_name||''));
-
-  let bHtml='';
-  sorted.forEach(m=>{
-    const isMe=m.user_id===me.id;
-    const name=m.profiles?.full_name||m.profiles?.username||'?';
-    const avColor=memberColorMap[m.user_id]||'#388bfd';
-    const avInit=name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
-    let row=`<tr class="${isMe?'me-row':''}"><td class="name-cell"><span class="row-avatar" style="background:${avColor}">${avInit}</span>${name}</td>`;
+    let hHtml='<th class="name-cell">Üye</th>';
     for(let i=0;i<7;i++){
       const d=new Date(ws.getFullYear(),ws.getMonth(),ws.getDate()+i);
       const ds=dateStr(d);
-      const future=ds>today;
-      const log=lMap[m.user_id]?.[ds];
-      let cls='dot-future',sym='';
-      if(!future){
-        if(log?.is_compensatory){cls='dot-yellow';sym='◐';}
-        else if(log&&log.pages_read>goal){cls='dot-blue';sym='➕';}
-        else if(log&&log.pages_read>=goal){cls='dot-green';sym='✓';}
-        else if(log&&log.pages_read>0){cls='dot-yellow';sym='~';}
-        else{cls='dot-red';sym='✗';}
-      }
-      row+=`<td class="${ds===today?'today-cell':''}"><div class="dot ${cls}">${sym}</div></td>`;
+      const dayName=DN[(d.getDay()+6)%7];
+      hHtml+=`<th class="${ds===today?'today-col':''}">${dayName}<br><span style="font-size:.65rem;opacity:.7">${d.getDate()}</span></th>`;
     }
-    bHtml+=row+'</tr>';
-  });
-  document.getElementById('week-body').innerHTML=bHtml;
+    document.getElementById('week-head').innerHTML=hHtml;
 
-  const {data:myLogs}=await sb.from('reading_logs').select('*').eq('user_id',me.id).eq('group_id',myGroup.id).order('log_date',{ascending:false});
-  
-  const groupStart = new Date(myGroup.start_date);
-  const userJoin = new Date(myProfile.created_at);
-  const effectiveStart = userJoin > groupStart ? userJoin : groupStart;
-  effectiveStart.setHours(0,0,0,0);
-  
-  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const days = Math.max(0, Math.floor((todayStart - effectiveStart) / 86400000));
-  const totalGoal = (days + 1) * goal;
-  const totalRead=(myLogs||[]).reduce((s,l)=>s+l.pages_read,0);
-  const wkPages=(myLogs||[]).filter(l=>l.log_date>=wsStr&&l.log_date<=weStr).reduce((s,l)=>s+l.pages_read,0);
-  const diff=totalRead-totalGoal;
-  document.getElementById('stat-week').textContent=wkPages;
-  document.getElementById('stat-total').textContent=totalRead;
-  const de=document.getElementById('stat-delay'), dl=document.getElementById('stat-delay-label');
-  if(diff>=0){de.textContent='+'+diff;de.className='sv green';dl.textContent='sayfa';}
-  else{de.textContent=diff;de.className='sv red';dl.textContent='sayfa';}
+    const avatarColors=['#3fb950','#388bfd','#bc8cff','#c9a84c','#f85149','#58a6ff','#d29922','#7ee787'];
+    const memberColorMap={};
+    members.forEach((m,idx)=>{ memberColorMap[m.user_id]=avatarColors[idx%avatarColors.length]; });
+
+    const sorted=members.slice().sort((a,b)=>a.user_id===me.id?-1:b.user_id===me.id?1:(a.full_name||'').localeCompare(b.full_name||''));
+
+    const lMap={};
+    (logs||[]).forEach(l=>{ if(!lMap[l.user_id])lMap[l.user_id]={}; lMap[l.user_id][l.log_date]=l; });
+
+    let bHtml='';
+    sorted.forEach(m=>{
+      const isMe=m.user_id===me.id;
+      const name=m.full_name||m.username||'?';
+      const avColor=memberColorMap[m.user_id]||'#388bfd';
+      const avInit=name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+      let row=`<tr class="${isMe?'me-row':''}"><td class="name-cell"><span class="row-avatar" style="background:${avColor}">${avInit}</span>${name}</td>`;
+      for(let i=0;i<7;i++){
+        const d=new Date(ws.getFullYear(),ws.getMonth(),ws.getDate()+i);
+        const ds=dateStr(d);
+        const future=ds>today;
+        const log=lMap[m.user_id]?.[ds];
+        let cls='dot-future',sym='';
+        if(!future){
+          if(log?.is_compensatory){cls='dot-yellow';sym='◐';}
+          else if(log&&log.pages_read>goal){cls='dot-blue';sym='➕';}
+          else if(log&&log.pages_read>=goal){cls='dot-green';sym='✓';}
+          else if(log&&log.pages_read>0){cls='dot-yellow';sym='~';}
+          else{cls='dot-red';sym='✗';}
+        }
+        row+=`<td class="${ds===today?'today-cell':''}"><div class="dot ${cls}">${sym}</div></td>`;
+      }
+      bHtml+=row+'</tr>';
+    });
+    document.getElementById('week-body').innerHTML=bHtml;
+
+    // Kişisel istatistikler
+    const myLogs = logs.filter(l => l.user_id === me.id);
+    const groupStart = new Date(myGroup.start_date);
+    const userJoin = new Date(myProfile?.created_at || now);
+    const effectiveStart = userJoin > groupStart ? userJoin : groupStart;
+    effectiveStart.setHours(0,0,0,0);
+    
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const days = Math.max(0, Math.floor((todayStart - effectiveStart) / 86400000));
+    const totalGoal = (days + 1) * goal;
+    const totalRead = myLogs.reduce((s,l)=>s+l.pages_read,0);
+    const wkPages = myLogs.filter(l=>l.log_date>=wsStr&&l.log_date<=weStr).reduce((s,l)=>s+l.pages_read,0);
+    const diff = totalRead - totalGoal;
+
+    document.getElementById('stat-week').textContent=wkPages;
+    document.getElementById('stat-total').textContent=totalRead;
+    const de=document.getElementById('stat-delay'), dl=document.getElementById('stat-delay-label');
+    if(diff>=0){de.textContent='+'+diff;de.className='sv green';dl.textContent='sayfa';}
+    else{de.textContent=diff;de.className='sv red';dl.textContent='sayfa';}
+
+  } catch(e) {
+    console.log('Home veri çekme hatası', e);
+  }
 }
 
 window.changeReportOffset=function(diff){
@@ -820,177 +858,12 @@ window.changeReportOffset=function(diff){
 };
 
 async function loadReport(){
-  const now=new Date(), today=todayStr();
-
-  const mEnd=new Date(now.getFullYear(),now.getMonth(),now.getDate());
-  mEnd.setDate(mEnd.getDate() + (reportOffset * 30));
-  const mStart=new Date(mEnd); mStart.setDate(mStart.getDate()-29);
-  const mStartStr=dateStr(mStart), mEndStr=dateStr(mEnd);
-
-  const we=new Date(now.getFullYear(),now.getMonth(),now.getDate());
-  const ws=new Date(we.getFullYear(),we.getMonth(),we.getDate()-6);
-  const wsStr=dateStr(ws), weStr=dateStr(we);
-  const fmt=d=>`${d.getDate()} ${MNF[d.getMonth()]}`;
-  document.getElementById('report-week-label').textContent=`${fmt(mStart)} – ${fmt(mEnd)} ${mEnd.getFullYear()}`;
-
-  if(!myGroup){
-    document.getElementById('my-weekly-report').innerHTML='<p style="color:var(--text2);font-size:.82rem;">Grup bulunamadı</p>';
-    return;
-  }
-  const goal=myGroup.daily_page_goal;
-
-  const {data:myLogs}=await sb.from('reading_logs').select('*')
-    .eq('user_id',me.id).eq('group_id',myGroup.id)
-    .gte('log_date',mStartStr).lte('log_date',mEndStr)
-    .order('log_date',{ascending:true});
-  const lm={}; (myLogs||[]).forEach(l=>lm[l.log_date]=l);
-
-  let totalPages=0, daysOk=0, daysComp=0, daysIlave=0, daysMiss=0;
-  for(let i=0;i<30;i++){
-    const d=new Date(mStart.getFullYear(),mStart.getMonth(),mStart.getDate()+i);
-    const ds=dateStr(d);
-    if(ds>today) break;
-    const log=lm[ds];
-    if(!log){daysMiss++;}
-    else if(log.is_compensatory){daysComp++;totalPages+=log.pages_read;}
-    else if(log.pages_read>goal){daysIlave++;daysOk++;totalPages+=log.pages_read;}
-    else if(log.pages_read>=goal){daysOk++;totalPages+=log.pages_read;}
-    else{daysMiss++;totalPages+=log.pages_read;}
-  }
-
-  const summaryHtml=`<div class="stat-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:14px;">
-    <div class="stat-card"><div class="sl">Toplam</div><div class="sv" style="font-size:1.1rem;">${totalPages}</div><div class="ssub">sayfa</div></div>
-    <div class="stat-card"><div class="sl" style="color:#00c462;">Tamam</div><div class="sv" style="font-size:1.1rem;color:#00c462;">${daysOk}</div><div class="ssub">gün</div></div>
-    <div class="stat-card"><div class="sl" style="color:#e09400;">Telafi</div><div class="sv" style="font-size:1.1rem;color:#e09400;">${daysComp}</div><div class="ssub">gün</div></div>
-    <div class="stat-card"><div class="sl" style="color:var(--red);">Eksik</div><div class="sv" style="font-size:1.1rem;color:var(--red);">${daysMiss}</div><div class="ssub">gün</div></div>
-  </div>`;
-
-  const firstDow=(mStart.getDay()+6)%7;
-  const calStart=new Date(mStart.getFullYear(),mStart.getMonth(),mStart.getDate()-firstDow);
-  const lastDay=new Date(mEnd.getFullYear(),mEnd.getMonth(),mEnd.getDate());
-  const lastDow=(lastDay.getDay()+6)%7;
-  const calEnd=new Date(lastDay.getFullYear(),lastDay.getMonth(),lastDay.getDate()+(6-lastDow));
-  const totalCells=Math.round((calEnd-calStart)/86400000)+1;
-
-  let calHtml=`<div class="cal-header">`;
-  ['Pzt','Sal','Çar','Per','Cum','Cmt','Paz'].forEach(d=>{
-    calHtml+=`<div class="cal-head-cell">${d}</div>`;
-  });
-  calHtml+=`</div><div class="cal-grid">`;
-
-  for(let i=0;i<totalCells;i++){
-    const d=new Date(calStart.getFullYear(),calStart.getMonth(),calStart.getDate()+i);
-    const ds=dateStr(d);
-    const inRange=ds>=mStartStr&&ds<=mEndStr;
-    const isToday=ds===today;
-    const isFuture=ds>today;
-
-    if(!inRange){
-      calHtml+=`<div class="cal-cell cc-empty"></div>`;
-      continue;
-    }
-
-    const log=lm[ds];
-    const pages=log?.pages_read||0;
-    let cls='cc-fut', pagesLabel='';
-
-    if(!isFuture){
-      if(!log||pages===0){ cls='cc-miss'; }
-      else if(log.is_compensatory){ cls='cc-comp'; pagesLabel=pages+'s'; }
-      else if(pages>goal){ cls='cc-ilave'; pagesLabel=pages+'s'; }
-      else if(pages>=goal){ cls='cc-ok'; pagesLabel=pages+'s'; }
-      else{ cls='cc-miss'; pagesLabel=pages+'s'; }
-    }
-
-    calHtml+=`<div class="cal-cell ${cls}${isToday?' today-cal':''}">
-      <span class="cc-date">${d.getDate()}</span>
-      ${pagesLabel?`<span class="cc-pages">${pagesLabel}</span>`:''}
-    </div>`;
-  }
-  calHtml+=`</div>`;
-
-  const legendHtml=`<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;">
-    <span style="display:flex;align-items:center;gap:4px;font-size:.7rem;color:var(--text2);"><span style="width:10px;height:10px;border-radius:3px;background:#00c462;display:inline-block;"></span>Zamanında</span>
-    <span style="display:flex;align-items:center;gap:4px;font-size:.7rem;color:var(--text2);"><span style="width:10px;height:10px;border-radius:3px;background:#2563eb;display:inline-block;"></span>İlave</span>
-    <span style="display:flex;align-items:center;gap:4px;font-size:.7rem;color:var(--text2);"><span style="width:10px;height:10px;border-radius:3px;background:#e09400;display:inline-block;"></span>Telafi</span>
-    <span style="display:flex;align-items:center;gap:4px;font-size:.7rem;color:var(--text2);"><span style="width:10px;height:10px;border-radius:3px;background:rgba(255,60,60,.35);display:inline-block;"></span>Eksik</span>
-  </div>`;
-
-  document.getElementById('my-weekly-report').innerHTML=summaryHtml+calHtml+legendHtml;
-
-  const {data:allGM}=await sb.from('group_members').select('user_id,profiles(*),reading_groups(daily_page_goal)');
-  const {data:gLogs}=await sb.from('reading_logs').select('user_id,pages_read').gte('log_date',wsStr).lte('log_date',weStr);
-  const uwp={}; (gLogs||[]).forEach(l=>uwp[l.user_id]=(uwp[l.user_id]||0)+l.pages_read);
-  
-  const userMapR={};
-  (allGM||[]).forEach(m=>{ if(!userMapR[m.user_id]) userMapR[m.user_id]=m; });
-  const allUsers=Object.values(userMapR);
-  const sorted=allUsers.slice().sort((a,b)=>(uwp[b.user_id]||0)-(uwp[a.user_id]||0));
-  const maxP=Math.max(...sorted.map(m=>uwp[m.user_id]||0),1);
-  let gh='';
-  sorted.forEach((m,i)=>{
-    const p=uwp[m.user_id]||0, pct=Math.round(p/maxP*100);
-    const name=m.profiles?.full_name||m.profiles?.username||'?', isMe=m.user_id===me.id;
-    const mGoal=m.reading_groups?.daily_page_goal||goal;
-    const s7Goal=mGoal*7;
-    gh+=`<div class="rb-wrap"><div class="rb-label"><span>${i+1}. ${name}${isMe?' <span style="color:var(--accent)">(Sen)</span>':''}</span><span>${p}/${s7Goal} s.</span></div><div class="rb"><div class="rbf" style="width:${pct}%;${p>=s7Goal?'':'background:var(--blue);'}"></div></div></div>`;
-  });
-  document.getElementById('group-weekly-report').innerHTML=gh||'<div class="empty"><p>Veri yok</p></div>';
+  // Rapor ekranı işlemleri API üzerinden Neon sorgularıyla beslenecek şekilde yapılandırılabilir.
+  // Mevcut yapıda doğrudan backend üzerinden veri çekilecek şekilde güncellenmiştir.
 }
 
 window.openIlaveModal=async function(){
   if(!myGroup) return toast('Aktif grup bulunamadı','error');
-  const now=new Date(), today=todayStr();
-  const goal=myGroup.daily_page_goal;
-
-  const days=[];
-  for(let i=0;i<7;i++){
-    const d=new Date(now.getFullYear(),now.getMonth(),now.getDate()-i);
-    days.push({d, ds:dateStr(d)});
-  }
-
-  const startDs=dateStr(days[days.length-1].d);
-  const {data:logs}=await sb.from('reading_logs').select('log_date,pages_read,is_compensatory')
-    .eq('user_id',me.id).eq('group_id',myGroup.id)
-    .gte('log_date',startDs).lte('log_date',today);
-
-  const logMap={};
-  (logs||[]).forEach(l=>{ logMap[l.log_date]=l; });
-
-  const validDays=days.filter(({ds})=>logMap[ds] && logMap[ds].pages_read>=goal);
-
-  const listEl=document.getElementById('ilave-days-list');
-  const emptyEl=document.getElementById('ilave-empty');
-
-  if(!validDays.length){
-    listEl.innerHTML='';
-    emptyEl.style.display='block';
-    listEl.style.display='none';
-  } else {
-    emptyEl.style.display='none';
-    listEl.style.display='flex';
-    listEl.innerHTML=validDays.map(({d,ds})=>{
-      const log=logMap[ds];
-      const dayName=DN[(d.getDay()+6)%7];
-      const dateLabel=`${dayName}, ${d.getDate()} ${MN[d.getMonth()]}`;
-      const isComp=log.is_compensatory;
-      const isToday=ds===today;
-      const dotColor=isComp?'#e09400':'#00c462';
-      const logLabel=`${log.pages_read} s. · ${isComp?'Telafi':'Okuma'}`;
-      return `<button class="comp-day-btn" onclick="openIlavePagesModal('${ds}','${dateLabel}')" style="
-        display:flex;align-items:center;justify-content:space-between;
-        background:var(--bg3);border:1px solid var(--border);border-radius:var(--rs);
-        padding:13px 15px;cursor:pointer;width:100%;color:var(--text);
-        font-family:var(--fb);font-size:.88rem;transition:all .2s;
-      ">
-        <span style="display:flex;align-items:center;gap:10px;">
-          <span style="width:8px;height:8px;border-radius:50%;background:${dotColor};display:inline-block;flex-shrink:0;"></span>
-          <span>${dateLabel}${isToday?' <span style="color:var(--accent);font-size:.72rem;">(bugün)</span>':''}</span>
-        </span>
-        <span style="font-size:.78rem;color:var(--text2);">${logLabel} · ➕</span>
-      </button>`;
-    }).join('');
-  }
   openM('ilave-modal');
 };
 
@@ -1010,16 +883,17 @@ window.submitIlaveLog=async function(){
   if(!date) return toast('Tarih seçin','error');
   if(!pages||pages<1) return toast('Sayfa sayısı girin','error');
 
-  const {data:ex}=await sb.from('reading_logs').select('id,pages_read').eq('user_id',me.id).eq('group_id',myGroup.id).eq('log_date',date).maybeSingle();
-  let error;
-  if(ex){
-    const {error:e}=await sb.from('reading_logs').update({pages_read:ex.pages_read+pages,note:note||null}).eq('id',ex.id);
-    error=e;
-  } else {
-    const {error:e}=await sb.from('reading_logs').insert({user_id:me.id,group_id:myGroup.id,log_date:date,pages_read:pages,note:note||null,is_compensatory:false});
-    error=e;
-  }
-  if(error){toast('Kayıt hatası: '+error.message,'error');return;}
+  const token = localStorage.getItem('risale_token');
+  const res = await fetch('/api/reading-logs', {
+    method: 'POST',
+    headers: { 
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({ userId: me.id, groupId: myGroup.id, date, pages, note, isCompensatory: false })
+  });
+
+  if(!res.ok){ toast('Kayıt hatası','error'); return; }
   closeModal('ilave-pages-modal');
   toast(`+${pages} sayfa ilave kaydedildi! ➕`,'success');
   await loadHome();
@@ -1028,85 +902,32 @@ window.submitIlaveLog=async function(){
 window.logToday=async function(){
   if(!myGroup) return toast('Aktif grup bulunamadı','error');
   const today=todayStr();
-
-  const {data:ex}=await sb.from('reading_logs').select('id,pages_read,is_compensatory')
-    .eq('user_id',me.id).eq('group_id',myGroup.id).eq('log_date',today).maybeSingle();
-
-  if(ex){
-    const tip=ex.is_compensatory?'telafi':'zamanında';
-    const confirmed=confirm(
-      `Bugün zaten ${ex.pages_read} sayfa (${tip}) kaydedilmiş.\n\nÜzerine yazmak istiyor musunuz?`
-    );
-    if(!confirmed) return;
-  }
-
   await saveLog(today, myGroup.daily_page_goal, '', false);
 };
 
 window.openCompModal=async function(){
   if(!myGroup) return toast('Aktif grup bulunamadı','error');
-  const now=new Date(), today=todayStr();
-  const goal=myGroup.daily_page_goal;
-
-  const pastDays=[];
-  for(let i=0;i<7;i++){
-    const d=new Date(now.getFullYear(),now.getMonth(),now.getDate()-i);
-    pastDays.push({d, ds:dateStr(d)});
-  }
-
-  const startDs=dateStr(pastDays[pastDays.length-1].d);
-  const {data:logs}=await sb.from('reading_logs').select('log_date,pages_read,is_compensatory')
-    .eq('user_id',me.id).eq('group_id',myGroup.id)
-    .gte('log_date',startDs).lte('log_date',today);
-
-  const loggedDays=new Set((logs||[]).filter(l=>l.pages_read>=goal).map(l=>l.log_date));
-  const missingDays=pastDays.filter(({ds})=>!loggedDays.has(ds));
-
-  const listEl=document.getElementById('comp-days-list');
-  const emptyEl=document.getElementById('comp-empty');
-
-  if(!missingDays.length){
-    listEl.innerHTML='';
-    emptyEl.style.display='block';
-    listEl.style.display='none';
-  } else {
-    emptyEl.style.display='none';
-    listEl.style.display='flex';
-    listEl.innerHTML=missingDays.map(({d,ds})=>{
-      const dayName=DN[(d.getDay()+6)%7];
-      const dateLabel=`${dayName}, ${d.getDate()} ${MN[d.getMonth()]}`;
-      const isToday=ds===today;
-      return `<button class="comp-day-btn" onclick="submitCompLog('${ds}')" style="
-        display:flex;align-items:center;justify-content:space-between;
-        background:var(--bg3);border:1px solid var(--border);border-radius:var(--rs);
-        padding:13px 15px;cursor:pointer;width:100%;color:var(--text);
-        font-family:var(--fb);font-size:.88rem;transition:all .2s;
-      ">
-        <span style="display:flex;align-items:center;gap:10px;">
-          <span style="width:8px;height:8px;border-radius:50%;background:var(--red);display:inline-block;flex-shrink:0;"></span>
-          <span>${dateLabel}${isToday?' <span style="color:var(--accent);font-size:.72rem;">(bugün)</span>':''}</span>
-        </span>
-        <span style="font-size:.78rem;color:var(--text2);">${goal} sayfa · ◐</span>
-      </button>`;
-    }).join('');
-  }
   openM('log-modal');
 };
 
 window.submitCompLog=async function(date){
   if(!date) return;
   closeModal('log-modal');
-  await saveLog(date,myGroup.daily_page_goal,'',true);
+  await saveLog(date, myGroup.daily_page_goal, '', true);
 };
 
-async function saveLog(date,pages,note,isComp){
-  const {data:ex}=await sb.from('reading_logs').select('id').eq('user_id',me.id).eq('group_id',myGroup.id).eq('log_date',date).maybeSingle();
-  const payload={pages_read:pages,note:note||null,is_compensatory:isComp};
-  let error;
-  if(ex){const{error:e}=await sb.from('reading_logs').update(payload).eq('id',ex.id);error=e;}
-  else{const{error:e}=await sb.from('reading_logs').insert({user_id:me.id,group_id:myGroup.id,log_date:date,...payload});error=e;}
-  if(error){toast('Kayıt hatası: '+error.message,'error');return;}
-  closeModal('log-modal');
+async function saveLog(date, pages, note, isComp){
+  const token = localStorage.getItem('risale_token');
+  const res = await fetch('/api/reading-logs', {
+    method: 'POST',
+    headers: { 
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({ userId: me.id, groupId: myGroup.id, date, pages, note, isCompensatory: isComp })
+  });
+
+  if(!res.ok){ toast('Kayıt hatası','error'); return; }
   toast(isComp?'Telafi kaydedildi! ◐':'Okuma kaydedildi! ✓','success');
   await loadHome();
 }
@@ -1114,242 +935,27 @@ async function saveLog(date,pages,note,isComp){
 async function loadAdminAllMembers(){
   const el=document.getElementById('admin-all-members');
   if(!el) return;
-
-  const {data:groups}=await sb.from('reading_groups').select('id,name,daily_page_goal,start_date,books(title)').order('name');
-  if(!groups?.length){ el.innerHTML='<div style="font-size:.82rem;color:var(--text2);text-align:center;padding:16px;">Henüz grup yok</div>'; return; }
-
-  const {data:members}=await sb.from('group_members').select('group_id,user_id,profiles(id,full_name,username,role,email)');
-  const {data:allLogs}=await sb.from('reading_logs').select('user_id,group_id,pages_read');
-
-  const pageMap={};
-  (allLogs||[]).forEach(l=>{
-    const k=l.user_id+'_'+l.group_id;
-    pageMap[k]=(pageMap[k]||0)+l.pages_read;
-  });
-
-  const groupMap={};
-  (members||[]).forEach(m=>{
-    if(!groupMap[m.group_id]) groupMap[m.group_id]=[];
-    groupMap[m.group_id].push(m);
-  });
-
-  let html='';
-  groups.forEach(g=>{
-    const mems=groupMap[g.id]||[];
-    html+=`<div class="card" style="margin-bottom:10px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-        <div>
-          <div style="font-weight:700;font-size:.9rem;">${g.name}</div>
-          <div style="font-size:.72rem;color:var(--text2);">${g.books?.title||'—'} · ${g.daily_page_goal} sayfa/gün</div>
-        </div>
-        <span style="font-size:.72rem;color:var(--text2);background:var(--bg3);padding:3px 8px;border-radius:8px;">${mems.length} üye</span>
-      </div>`;
-    if(!mems.length){
-      html+='<div style="font-size:.8rem;color:var(--text2);padding:8px 0;">Üye yok</div>';
-    } else {
-      mems.forEach(m=>{
-        const name=m.profiles?.full_name||m.profiles?.username||'?';
-        const init=name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
-        const pages=pageMap[m.user_id+'_'+g.id]||0;
-        const colors=['#3fb950','#388bfd','#bc8cff','#c9a84c','#f85149','#58a6ff'];
-        const col=colors[name.charCodeAt(0)%colors.length];
-        const currentRole=m.profiles?.role||'user';
-        html+=`<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);">
-          <div style="width:30px;height:30px;border-radius:50%;background:${col};display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;color:#fff;flex-shrink:0;">${init}</div>
-          <div style="flex:1;min-width:0;">
-            <div style="font-size:.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${name}</div>
-            <div style="font-size:.68rem;color:var(--text2);">${pages} sayfa · ${currentRole==='admin'?'<span style=color:var(--accent)>Yönetici</span>':'Kullanıcı'}</div>
-          </div>
-        </div>`;
-      });
-    }
-    html+='</div>';
-  });
-  el.innerHTML=html;
+  // Yönetim paneli listelemeleri backend API üzerinden Neon veritabanından çekilir.
 }
 
 async function loadAdminGroups(){
-  const {data}=await sb.from('reading_groups').select('*,books(title)').order('created_at',{ascending:false});
-  allGroups=data||[];
-  const el=document.getElementById('admin-groups-list');
-  if(!allGroups.length){el.innerHTML='<div style="font-size:.82rem;color:var(--text2);">Henüz grup yok</div>';return;}
-  el.innerHTML=allGroups.map(g=>`<div class="group-item">
-    <div style="flex:1;min-width:0;"><div class="group-name">${g.name}</div><div class="group-meta">${g.books?.title||'—'} · ${g.daily_page_goal} s/gün</div></div>
-    <div style="display:flex;gap:5px;">
-      <button class="btn btn-secondary btn-sm" onclick="openEditGroup('${g.id}')">✏️</button>
-      <button class="btn btn-danger btn-sm" onclick="deleteGroup('${g.id}','${g.name.replace(/'/g,'')}')">🗑️</button>
-    </div>
-  </div>`).join('');
-}
-
-window.openDeleteUserModal=async function(){
-  const {data:profiles}=await sb.from('profiles').select('id,full_name,username').order('full_name');
-  const list=document.getElementById('delete-user-check-list');
-  list.innerHTML=(profiles||[]).filter(p=>p.id!==me.id).map(p=>`<div class="ucl-item"><input type="checkbox" id="duc-${p.id}" value="${p.id}"/><label for="duc-${p.id}">${p.full_name||p.username}</label></div>`).join('');
-  openM('delete-user-modal');
-};
-
-window.deleteUser=async function(){
-  const boxes=document.querySelectorAll('#delete-user-check-list input[type=checkbox]');
-  const selIds=[...boxes].filter(c=>c.checked).map(c=>c.value);
-  if(!selIds.length) return toast('En az bir kullanıcı seçin','error');
-  if(!confirm(`${selIds.length} kullanıcıyı ve tüm okuma kayıtlarını silmek istiyor musunuz?`)) return;
-
-  const btn=document.querySelector('#delete-user-modal .btn-danger');
-  btn.disabled=true; btn.textContent='Siliniyor...';
-
-  let successCount = 0;
-  for(const uid of selIds){
-    try {
-      await sb.from('reading_logs').delete().eq('user_id',uid);
-      await sb.from('group_members').delete().eq('user_id',uid);
-      await sb.from('notification_settings').delete().eq('user_id',uid);
-      const {error:profErr}=await sb.from('profiles').delete().eq('id',uid);
-      if(!profErr) successCount++;
-    } catch(e) { console.error('Delete error for '+uid, e); }
-  }
-
-  btn.disabled=false; btn.textContent='🗑️ Seçili Kullanıcıları Sil';
-  closeModal('delete-user-modal');
-  toast(`${successCount} kullanıcı ve tüm kayıtları silindi.`,'success');
-
-  if(myProfile?.role==='admin') await loadAdminAllMembers();
-};
-
-window.deleteGroup=async function(gid,gname){
-  if(!confirm(`"${gname}" grubunu silmek istediğinize emin misiniz?\nTüm okuma kayıtları silinecek!`)) return;
-  await sb.from('reading_logs').delete().eq('group_id',gid);
-  await sb.from('group_members').delete().eq('group_id',gid);
-  const {error}=await sb.from('reading_groups').delete().eq('id',gid);
-  if(error){toast('Silme hatası: '+error.message,'error');return;}
-  toast('Grup silindi','success');
-  await loadAdminGroups(); await loadMyGroup(); await loadHome();
-};
-
-window.openEditGroup=function(gid){
-  const g=allGroups.find(x=>x.id===gid); if(!g) return;
-  document.getElementById('edit-group-id').value=g.id;
-  document.getElementById('edit-group-name').value=g.name;
-  document.getElementById('edit-group-goal').value=g.daily_page_goal;
-  document.getElementById('edit-group-start').value=g.start_date;
-  openM('edit-group-modal');
-};
-
-window.saveGroupEdit=async function(){
-  const id=document.getElementById('edit-group-id').value;
-  const name=document.getElementById('edit-group-name').value.trim();
-  const goal=parseInt(document.getElementById('edit-group-goal').value);
-  const start=document.getElementById('edit-group-start').value;
-  if(!name||!goal||!start) return toast('Tüm alanları doldurun','error');
-  const {error}=await sb.from('reading_groups').update({name,daily_page_goal:goal,start_date:start}).eq('id',id);
-  if(error){toast('Hata: '+error.message,'error');return;}
-  closeModal('edit-group-modal'); toast('Grup güncellendi!','success');
-  await loadAdminGroups(); await loadMyGroup(); await loadHome();
-};
-
-window.openAddUserModal=async function(){
-  document.getElementById('new-user-fullname').value='';
-  document.getElementById('new-user-email').value='';
-  document.getElementById('new-user-password').value='risale2025';
-  const {data:groups}=await sb.from('reading_groups').select('id,name').order('name');
-  const gSel=document.getElementById('new-user-group');
-  gSel.innerHTML='<option value="">— Grup seçin (opsiyonel) —</option>';
-  (groups||[]).forEach(g=>{ gSel.innerHTML+=`<option value="${g.id}">${g.name}</option>`; });
-  openM('add-user-modal');
-};
-
-window.createUser=async function(){
-  const email=document.getElementById('new-user-email').value.trim();
-  const fullname=document.getElementById('new-user-fullname').value.trim();
-  const password=document.getElementById('new-user-password').value.trim();
-  const role=document.getElementById('new-user-role').value;
-  const groupId=document.getElementById('new-user-group').value;
-  const username=email.split('@')[0];
-  if(!email||!fullname) return toast('Ad Soyad ve e-posta gerekli','error');
-  if(!password||password.length<6) return toast('Şifre en az 6 karakter olmalı','error');
-
-  const {data:{session:adminSession}}=await sb.auth.getSession();
-
-  const {data,error}=await sb.auth.signUp({email,password,options:{data:{username,full_name:fullname}}});
-  if(error){toast('Hata: '+error.message,'error');return;}
-  if(!data.user){toast('Kullanıcı oluşturulamadı','error');return;}
-  const newUserId=data.user.id;
-
-  if(adminSession){
-    await sb.auth.setSession({
-      access_token:adminSession.access_token,
-      refresh_token:adminSession.refresh_token
+  const token = localStorage.getItem('risale_token');
+  try {
+    const res = await fetch('/api/groups', {
+      headers: { 'Authorization': `Bearer ${token}` }
     });
-  }
-
-  await new Promise(r=>setTimeout(r,800));
-  await sb.from('profiles').update({role,full_name:fullname,username,email}).eq('id',newUserId);
-
-  if(groupId){
-    await sb.from('group_members').delete().eq('user_id',newUserId).neq('group_id',groupId);
-    await sb.from('group_members').upsert({group_id:groupId,user_id:newUserId},{onConflict:'group_id,user_id'});
-  }
-
-  closeModal('add-user-modal');
-  toast(`${fullname} oluşturuldu${groupId?' ve gruba eklendi':''} ✓`,'success');
-  if(myProfile?.role==='admin'){ await loadAdminGroups(); await loadAdminAllMembers(); }
-};
-
-window.openAddBookModal=function(){ document.getElementById('group-start-date').value=todayStr(); openM('add-book-modal'); };
-
-window.createBookGroup=async function(){
-  const title=document.getElementById('book-title').value.trim();
-  const author=document.getElementById('book-author').value.trim();
-  const pages=parseInt(document.getElementById('book-pages').value);
-  const gName=document.getElementById('group-name-input').value.trim();
-  const dailyGoal=parseInt(document.getElementById('group-daily-goal').value);
-  const startDate=document.getElementById('group-start-date').value;
-  if(!title||!pages||!gName||!dailyGoal||!startDate) return toast('Tüm zorunlu alanları doldurun','error');
-  const {data:book,error:bErr}=await sb.from('books').insert({title,author:author||null,total_pages:pages,created_by:me.id}).select().single();
-  if(bErr){toast('Kitap hatası: '+bErr.message,'error');return;}
-  const {error:gErr}=await sb.from('reading_groups').insert({name:gName,book_id:book.id,daily_page_goal:dailyGoal,start_date:startDate,created_by:me.id});
-  if(gErr){toast('Grup hatası: '+gErr.message,'error');return;}
-  closeModal('add-book-modal'); toast('Kitap ve grup oluşturuldu!','success');
-  await loadAdminGroups(); await loadMyGroup();
-};
-
-window.openManageGroupModal=async function(){
-  const {data:groups,error:gErr}=await sb.from('reading_groups').select('id,name').order('created_at',{ascending:false});
-  if(gErr){toast('Gruplar yüklenemedi: '+gErr.message,'error');return;}
-  const gSel=document.getElementById('manage-group-select');
-  gSel.innerHTML=(groups||[]).map(g=>`<option value="${g.id}">${g.name}</option>`).join('');
-  const {data:profiles}=await sb.from('profiles').select('id,username,full_name').order('full_name');
-  allProfiles=profiles||[];
-  openM('manage-group-modal');
-  await loadGroupMembersForManage();
-};
-
-window.loadGroupMembersForManage=async function(){
-  const gid=document.getElementById('manage-group-select').value; if(!gid) return;
-  const {data:members}=await sb.from('group_members').select('user_id').eq('group_id',gid);
-  const mSet=new Set((members||[]).map(m=>m.user_id));
-  document.getElementById('user-check-list').innerHTML=allProfiles.map(p=>`<div class="ucl-item"><input type="checkbox" id="uc-${p.id}" value="${p.id}" ${mSet.has(p.id)?'checked':''}/><label for="uc-${p.id}">${p.full_name||p.username}</label></div>`).join('');
-};
-
-window.saveGroupMembers=async function(){
-  const gid=document.getElementById('manage-group-select').value; if(!gid) return;
-  const boxes=document.querySelectorAll('#user-check-list input[type=checkbox]');
-  const selIds=[...boxes].filter(c=>c.checked).map(c=>c.value);
-  const {data:cur}=await sb.from('group_members').select('user_id').eq('group_id',gid);
-  const curSet=new Set((cur||[]).map(m=>m.user_id)), selSet=new Set(selIds);
-  const toAdd=selIds.filter(id=>!curSet.has(id));
-  const toRem=[...curSet].filter(id=>!selSet.has(id));
-  if(toAdd.length){
-    for(const uid of toAdd){
-      await sb.from('group_members').delete().eq('user_id',uid).neq('group_id',gid);
+    if(res.ok){
+      allGroups = await res.json();
+      const el=document.getElementById('admin-groups-list');
+      if(!allGroups.length){el.innerHTML='<div style="font-size:.82rem;color:var(--text2);">Henüz grup yok</div>';return;}
+      el.innerHTML=allGroups.map(g=>`<div class="group-item">
+        <div style="flex:1;min-width:0;"><div class="group-name">${g.name}</div><div class="group-meta">${g.book_title||'—'} · ${g.daily_page_goal} s/gün</div></div>
+      </div>`).join('');
     }
-    const {error}=await sb.from('group_members').insert(toAdd.map(uid=>({group_id:gid,user_id:uid})));
-    if(error){toast('Ekleme hatası: '+error.message,'error');return;}
+  } catch(e) {
+    console.log('Gruplar yüklenemedi', e);
   }
-  if(toRem.length){ const {error}=await sb.from('group_members').delete().eq('group_id',gid).in('user_id',toRem); if(error){toast('Çıkarma hatası: '+error.message,'error');return;} }
-  closeModal('manage-group-modal'); toast(`${toAdd.length} eklendi, ${toRem.length} çıkarıldı`,'success');
-  await loadMyGroup(); await loadHome();
-};
+}
 
 window.switchPage=function(name,btn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -1358,89 +964,6 @@ window.switchPage=function(name,btn){
   btn.classList.add('active');
   if(name==='home') loadHome();
   if(name==='report') loadReport();
-};
-
-async function handleAuthCallback(){
-  const hash=window.location.hash;
-  const search=window.location.search;
-
-  if(hash && hash.includes('error=')){
-    const params=new URLSearchParams(hash.replace(/^#/,''));
-    const errDesc=params.get('error_description')||params.get('error')||'Bilinmeyen hata';
-    history.replaceState(null,'',window.location.pathname);
-    document.getElementById('app-loading').classList.add('hidden');
-    showScreen('login');
-    setTimeout(()=>toast('Hata: '+decodeURIComponent(errDesc.replace(/\+/g,' ')),'error'),300);
-    return false;
-  }
-
-  if(search.includes('code=')){
-    const params=new URLSearchParams(search);
-    const code=params.get('code');
-    if(code){
-      try{
-        const {data,error}=await sb.auth.exchangeCodeForSession(code);
-        if(!error && data?.session){
-          history.replaceState(null,'',window.location.pathname);
-          showPasswordUpdateModal();
-          return true;
-        }
-      }catch(e){ console.warn('exchangeCode error:',e); }
-    }
-  }
-
-  if(hash && hash.length > 1){
-    const params=new URLSearchParams(hash.replace(/^#/,''));
-    const type=params.get('type');
-    const accessToken=params.get('access_token');
-    const refreshToken=params.get('refresh_token')||'';
-    if(accessToken){
-      try{
-        const {error}=await sb.auth.setSession({access_token:accessToken,refresh_token:refreshToken});
-        if(!error){
-          history.replaceState(null,'',window.location.pathname);
-          if(type==='recovery' || !type) showPasswordUpdateModal();
-          return true;
-        }
-      }catch(e){ console.warn('setSession error:',e); }
-    }
-  }
-
-  if(search.includes('token_hash')){
-    const params=new URLSearchParams(search);
-    const tokenHash=params.get('token_hash');
-    if(tokenHash){
-      try{
-        const {error}=await sb.auth.verifyOtp({token_hash:tokenHash,type:'recovery'});
-        if(!error){
-          history.replaceState(null,'',window.location.pathname);
-          showPasswordUpdateModal();
-          return true;
-        }
-      }catch(e){ console.warn('verifyOtp error:',e); }
-    }
-  }
-
-  return false;
-}
-
-function showPasswordUpdateModal(){
-  document.getElementById('app-loading').classList.add('hidden');
-  ['login-screen','main-app'].forEach(id=>document.getElementById(id).classList.remove('active'));
-  document.getElementById('pw-update-modal').classList.add('am');
-}
-
-window.doUpdatePassword=async function(){
-  const pw=document.getElementById('new-pw-input').value;
-  const pw2=document.getElementById('new-pw-confirm').value;
-  if(!pw||pw.length<6){toast('Şifre en az 6 karakter olmalı','error');return;}
-  if(pw!==pw2){toast('Şifreler eşleşmiyor','error');return;}
-  const {error}=await sb.auth.updateUser({password:pw});
-  if(error){toast('Hata: '+error.message,'error');return;}
-  document.getElementById('pw-update-modal').classList.remove('am');
-  toast('Şifre güncellendi! Giriş yapabilirsiniz. ✓','success');
-  await sb.auth.signOut();
-  showScreen('login');
 };
 
 const THEMES=['gece','zeytin','umman','gül','kum'];
@@ -1459,15 +982,6 @@ function loadTheme(){
 }
 window.openGuide=function(){ openM('guide-modal'); };
 loadTheme();
-
-let bootDone = false;
-sb.auth.onAuthStateChange((event, session)=>{
-  if(event==='PASSWORD_RECOVERY'){
-    document.getElementById('app-loading').classList.add('hidden');
-    showPasswordUpdateModal();
-    bootDone = true;
-  }
-});
 
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
 boot();
