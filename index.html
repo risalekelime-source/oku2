@@ -84,8 +84,7 @@
     .dot-future{background:rgba(255,255,255,.04);color:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.08);}
     .me-row .name-cell{color:var(--accent);font-weight:700}
     .today-cell .dot{outline:2px solid var(--accent);outline-offset:1px;}
-    /* .name-cell overrides removed for better fit */
-    .row-avatar{width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700;color:#fff;flex-shrink:0;vertical-align:middle;margin-right:6px;flex-shrink:0;}
+    .row-avatar{width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700;color:#fff;flex-shrink:0;vertical-align:middle;margin-right:6px;}
     .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:16px}
     .stat-card{background:linear-gradient(135deg,var(--card),var(--card2));border:1px solid var(--border);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:3px}
     .sl{font-size:.68rem;color:var(--text2);font-weight:500;text-transform:uppercase;letter-spacing:.4px}
@@ -128,7 +127,6 @@
     .mtitle{font-family:var(--fd);font-size:1.15rem;margin-bottom:18px}
     .rb-wrap{margin:4px 0}.rb-label{display:flex;justify-content:space-between;font-size:.76rem;color:var(--text2);margin-bottom:3px}
     .rb{height:7px;background:var(--bg3);border-radius:4px;overflow:hidden}.rbf{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
-        /* Takvim grid */
     .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:4px}
     .cal-header{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:6px}
     .cal-head-cell{text-align:center;font-size:.62rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.4px;padding:2px 0}
@@ -160,7 +158,6 @@
     .log-tab{flex:1;padding:9px;text-align:center;border-radius:8px;cursor:pointer;font-size:.85rem;font-weight:600;color:var(--text2);transition:all .2s}
     .log-tab.active{background:var(--card);color:var(--accent)}
 
-    /* ── TEMALAR ─────────────────────────────────────────────── */
     body.theme-gece{
       --bg:#0a0e1a;--bg2:#0f1525;--bg3:#1a2035;
       --card:#131929;--card2:#1e2640;
@@ -229,46 +226,14 @@
   </div>
 </div>
 
-<!-- KILAVUZ MODAL -->
 <div id="guide-modal">
   <div class="mo" onclick="closeModal('guide-modal')">
     <div class="modal" style="max-height:88dvh;" onclick="event.stopPropagation()">
       <span class="mhandle"></span>
       <div class="mtitle">📖 Kullanma Kılavuzu</div>
       <div style="font-size:.85rem;line-height:1.7;color:var(--text);">
-
         <div style="font-weight:700;color:var(--accent);margin-bottom:6px;font-size:.9rem;">🎯 Amaç</div>
         <p style="margin-bottom:14px;color:var(--text2);">Risale-i Nur okuma gruplarının günlük okuma takibini kolayca yapabilmesi için tasarlanmıştır.</p>
-
-        <div style="font-weight:700;color:var(--accent);margin-bottom:6px;font-size:.9rem;">📖 Okuma Kaydetme</div>
-        <div style="background:var(--bg3);border-radius:var(--rs);padding:12px;margin-bottom:14px;">
-          <div style="margin-bottom:8px;"><span style="background:#00c462;color:#fff;padding:2px 8px;border-radius:5px;font-size:.75rem;font-weight:700;">📖 Okuma</span> <span style="color:var(--text2);margin-left:6px;">Günlük hedefi tamamladığınızda basın. Anında kaydeder.</span></div>
-          <div style="margin-bottom:8px;"><span style="background:#2563eb;color:#fff;padding:2px 8px;border-radius:5px;font-size:.75rem;font-weight:700;">➕ İlave</span> <span style="color:var(--text2);margin-left:6px;">Günlük hedefin üstünde okuma yaptıysanız kullanın.</span></div>
-          <div><span style="background:#e09400;color:#fff;padding:2px 8px;border-radius:5px;font-size:.75rem;font-weight:700;">◐ Telafi</span> <span style="color:var(--text2);margin-left:6px;">Geçmiş okunmayan günleri telafi etmek için kullanın.</span></div>
-        </div>
-
-        <div style="font-weight:700;color:var(--accent);margin-bottom:6px;font-size:.9rem;">📊 Son 7 Gün Tablosu</div>
-        <div style="background:var(--bg3);border-radius:var(--rs);padding:12px;margin-bottom:14px;">
-          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px;">
-            <span style="background:#00c462;color:#fff;padding:2px 8px;border-radius:5px;font-size:.72rem;font-weight:700;">✓ Zamanında</span>
-            <span style="background:#e09400;color:#fff;padding:2px 8px;border-radius:5px;font-size:.72rem;font-weight:700;">◐ Telafi</span>
-            <span style="background:#c0392b;color:#fff;padding:2px 8px;border-radius:5px;font-size:.72rem;font-weight:700;">✗ Eksik</span>
-          </div>
-          <p style="color:var(--text2);font-size:.82rem;">Her satır bir grup üyesi. Sütunlar son 7 gün. Kendi satırınız en üstte gösterilir.</p>
-        </div>
-
-        <div style="font-weight:700;color:var(--accent);margin-bottom:6px;font-size:.9rem;">📅 Aylık Rapor</div>
-        <p style="margin-bottom:14px;color:var(--text2);">Son 30 günün takvim görünümü. Yeşil = zamanında, Mavi = ilave, Sarı = telafi, Kırmızı = eksik.</p>
-
-        <div style="font-weight:700;color:var(--accent);margin-bottom:6px;font-size:.9rem;">📱 Ana Ekrana Ekleme</div>
-        <div style="background:var(--bg3);border-radius:var(--rs);padding:12px;margin-bottom:14px;">
-          <div style="margin-bottom:6px;"><strong>iPhone:</strong> <span style="color:var(--text2);">Safari → Paylaş simgesi → Ana Ekrana Ekle</span></div>
-          <div><strong>Android:</strong> <span style="color:var(--text2);">Chrome → Menü (⋮) → Uygulamayı Yükle</span></div>
-        </div>
-
-        <div style="font-weight:700;color:var(--accent);margin-bottom:6px;font-size:.9rem;">⚙️ Yönetici</div>
-        <p style="color:var(--text2);">Yönetim sekmesinden kullanıcı ekleyebilir, gruplara üye atayabilir, okuma gruplarını düzenleyebilirsiniz.</p>
-
       </div>
       <button class="btn btn-secondary btn-block" style="margin-top:16px;" onclick="closeModal('guide-modal')">Kapat</button>
     </div>
@@ -290,21 +255,17 @@
   </header>
 
   <main class="content">
-    <!-- HOME -->
     <div class="page active" id="page-home">
-      <!-- İstatistikler - En Üstte -->
       <div class="stat-grid" style="margin-bottom:10px;">
         <div class="stat-card" style="align-items:center;text-align:center;"><div class="sl">Son 7 Gün</div><div class="sv" id="stat-week">—</div><div class="ssub">sayfa</div></div>
         <div class="stat-card" style="align-items:center;text-align:center;"><div class="sl">Toplam</div><div class="sv" id="stat-total">—</div><div class="ssub">sayfa</div></div>
         <div class="stat-card" style="align-items:center;text-align:center;"><div class="sl">Durum</div><div class="sv" id="stat-delay">—</div><div class="ssub" id="stat-delay-label">sayfa</div></div>
       </div>
-      <!-- Butonlar -->
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;">
         <button class="btn btn-read btn-block" id="btn-read" onclick="logToday()" style="font-size:.82rem;padding:14px 6px;">📖 Okuma</button>
         <button class="btn btn-ilave btn-block" onclick="openIlaveModal()" style="font-size:.82rem;padding:14px 6px;">➕ İlave</button>
         <button class="btn btn-comp btn-block" onclick="openCompModal()" style="font-size:.82rem;padding:14px 6px;">◐ Telafi</button>
       </div>
-      <!-- Bu Hafta tablosu -->
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
         <div style="font-family:var(--fd);font-size:1.1rem;font-weight:700;">Son 7 Gün</div>
         <div style="display:flex;align-items:center;gap:10px;">
@@ -324,8 +285,6 @@
       </div>
     </div>
 
-
-    <!-- REPORT -->
     <div class="page" id="page-report">
       <div class="sh">
         <div>
@@ -346,7 +305,6 @@
       <div class="card" id="group-weekly-report"><div class="empty"><div class="eico">📈</div><p>Yükleniyor...</p></div></div>
     </div>
 
-    <!-- ADMIN -->
     <div class="page" id="page-admin">
       <div class="sh"><div class="st">Yönetim Paneli</div></div>
       <div class="card" style="margin-bottom:11px;">
@@ -356,18 +314,14 @@
         <button class="btn btn-secondary btn-block" style="margin-bottom:7px;" onclick="openManageGroupModal()">👥 Gruba Üye Ekle / Çıkar</button>
         <button class="btn btn-danger btn-block" onclick="openDeleteUserModal()">🗑️ Kullanıcı Sil</button>
       </div>
-      <!-- Tüm gruplar ve üyeleri -->
       <div class="sh" style="margin-bottom:10px;"><div class="st" style="font-size:1rem;">Tüm Üyeler</div></div>
       <div id="admin-all-members"><div style="font-size:.82rem;color:var(--text2);text-align:center;padding:20px;">Yükleniyor...</div></div>
-      <!-- Gruplar listesi -->
       <div class="sh" style="margin-top:4px;margin-bottom:10px;"><div class="st" style="font-size:1rem;">Gruplar</div></div>
       <div class="card"><div id="admin-groups-list"><div style="font-size:.82rem;color:var(--text2);">Yükleniyor...</div></div></div>
     </div>
 
-    <!-- SETTINGS -->
     <div class="page" id="page-settings">
       <div class="sh"><div class="st">Ayarlar</div></div>
-      <!-- Tema Seçici -->
       <div class="card" style="margin-bottom:11px;">
         <div style="font-weight:600;margin-bottom:13px;font-size:.88rem;">🎨 Tema</div>
         <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;">
@@ -407,7 +361,6 @@
         <div class="fr"><label>Yeni Şifre <span style="font-weight:400;text-transform:none;color:var(--text2);">(boş = değiştirme)</span></label><input type="password" id="edit-password" placeholder="••••••••"/></div>
         <button class="btn btn-primary btn-block" onclick="saveProfile()">Kaydet</button>
       </div>
-
     </div>
   </main>
 
@@ -433,7 +386,6 @@
 
 <div id="toast"></div>
 
-<!-- COMP MODAL -->
 <div id="log-modal">
   <div class="mo" onclick="closeModal('log-modal')">
     <div class="modal" onclick="event.stopPropagation()">
@@ -448,7 +400,6 @@
   </div>
 </div>
 
-<!-- ADD USER MODAL -->
 <div id="add-user-modal">
   <div class="mo" onclick="closeModal('add-user-modal')">
     <div class="modal" onclick="event.stopPropagation()">
@@ -467,7 +418,6 @@
   </div>
 </div>
 
-<!-- ADD BOOK/GROUP MODAL -->
 <div id="add-book-modal">
   <div class="mo" onclick="closeModal('add-book-modal')">
     <div class="modal" onclick="event.stopPropagation()">
@@ -483,7 +433,6 @@
   </div>
 </div>
 
-<!-- MANAGE GROUP MODAL -->
 <div id="manage-group-modal">
   <div class="mo" onclick="closeModal('manage-group-modal')">
     <div class="modal" onclick="event.stopPropagation()">
@@ -498,7 +447,6 @@
   </div>
 </div>
 
-<!-- DELETE USER MODAL -->
 <div id="delete-user-modal">
   <div class="mo" onclick="closeModal('delete-user-modal')">
     <div class="modal" onclick="event.stopPropagation()">
@@ -514,7 +462,6 @@
   </div>
 </div>
 
-<!-- İLAVE MODAL -->
 <div id="ilave-modal">
   <div class="mo" onclick="closeModal('ilave-modal')">
     <div class="modal" onclick="event.stopPropagation()">
@@ -528,7 +475,7 @@
     </div>
   </div>
 </div>
-<!-- İLAVE SAYFA MODAL -->
+
 <div id="ilave-pages-modal">
   <div class="mo" onclick="closeModal('ilave-pages-modal')">
     <div class="modal" onclick="event.stopPropagation()">
@@ -546,7 +493,6 @@
   </div>
 </div>
 
-<!-- ŞİFRE GÜNCELLEME MODAL (recovery flow) -->
 <div id="pw-update-modal">
   <div class="mo" style="align-items:center;">
     <div class="modal" onclick="event.stopPropagation()">
@@ -560,7 +506,6 @@
   </div>
 </div>
 
-<!-- RESET PASSWORD MODAL -->
 <div id="reset-pw-modal">
   <div class="mo" onclick="closeModal('reset-pw-modal')">
     <div class="modal" onclick="event.stopPropagation()">
@@ -581,7 +526,6 @@
   </div>
 </div>
 
-<!-- EDIT GROUP MODAL -->
 <div id="edit-group-modal">
   <div class="mo" onclick="closeModal('edit-group-modal')">
     <div class="modal" onclick="event.stopPropagation()">
@@ -600,7 +544,6 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 
 const sb = createClient('https://rrupsidrdgwgagetcojx.supabase.co','sb_publishable_lQXYDZqUPATZNwM8Cb17kg_F-T1XsOI');
 
-
 let me = null, myProfile = null, myGroup = null, allProfiles = [], allGroups = [], notifTimer = null;
 let homeWeekOffset = 0;
 let reportOffset = 0;
@@ -614,6 +557,7 @@ function todayStr(){
   const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), dd=String(d.getDate()).padStart(2,'0');
   return `${y}-${m}-${dd}`;
 }
+
 async function loadUserData(currentGroup) {
     try {
         const currentUser = me || (await sb.auth.getUser()).data?.user;
@@ -621,7 +565,6 @@ async function loadUserData(currentGroup) {
 
         const targetGroup = currentGroup || myGroup;
         
-        // 🔍 TEST LOGU: Konsola tam olarak ne geldiğini basıyoruz
         console.log("=== KÖPRÜ VERİ KONTROLÜ ===");
         console.log("Gelen Grup Nesnesi:", JSON.stringify(targetGroup));
 
@@ -630,11 +573,9 @@ async function loadUserData(currentGroup) {
             const gGoal = targetGroup.daily_page_goal || targetGroup.page_goal || 20;
 
             if (typeof window.AndroidBridge !== 'undefined') {
-                // 🔥 GÜNCELLENDİ: Android katmanına email ve şifreyi de paketleyip gönderiyoruz
                 window.AndroidBridge.sendData(JSON.stringify({
                     userId: currentUser.id,
-                    userEmail: currentUser.email, // 👈 Supabase kullanıcısının e-postası
-                    userPassword: typeof userPassword, // 👈 Web girişindeki şifre değişkeniniz
+                    userEmail: currentUser.email,
                     groupId: String(gId),
                     goalPages: parseInt(gGoal) || 20
                 }));
@@ -646,34 +587,31 @@ async function loadUserData(currentGroup) {
         console.log('loadUserData hatası:', e);
     }
 }
+
 function dateStr(d){
   const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), dd=String(d.getDate()).padStart(2,'0');
   return `${y}-${m}-${dd}`;
 }
-function weekStart(d=new Date()){
-  const dt=new Date(d.getFullYear(),d.getMonth(),d.getDate());
-  const day=dt.getDay();
-  dt.setDate(dt.getDate()-(day===0?6:day-1));
-  return dt;
-}
-let _tt; function toast(msg,type=''){
+
+let _tt; 
+function toast(msg,type=''){
   const t=document.getElementById('toast');
   t.textContent=msg; t.className='show'+(type?' '+type:'');
   clearTimeout(_tt); _tt=setTimeout(()=>t.className='',3200);
 }
+
 function showScreen(name){
   document.getElementById('app-loading').classList.add('hidden');
   ['login-screen','main-app'].forEach(id=>document.getElementById(id).classList.remove('active'));
   const m={login:'login-screen',app:'main-app'};
   if(m[name]) document.getElementById(m[name]).classList.add('active');
 }
+
 function openM(id){ document.getElementById(id).classList.add('am'); }
 window.closeModal=function(id){ document.getElementById(id).classList.remove('am'); };
 
-// ── AUTH ──────────────────────────────────────────────────────
 async function boot(){
   try{
-    // Önce recovery URL kontrolü
     const isRecovery=await handleAuthCallback();
     if(isRecovery) return;
 
@@ -682,6 +620,7 @@ async function boot(){
     else showScreen('login');
   }catch(e){ console.error(e); showScreen('login'); }
 }
+
 window.forgotPassword=async function(){
   const email=document.getElementById('login-email').value.trim();
   if(!email){ toast('Önce e-posta adresinizi girin','error'); return; }
@@ -692,41 +631,26 @@ window.forgotPassword=async function(){
   toast('Şifre sıfırlama maili gönderildi! Gelen kutunuzu kontrol edin.','success');
 };
 
-async function doLogin() {
-  const email = document.getElementById('login-email').value.trim();
-  const password = document.getElementById('login-password').value.trim();
-  const errEl = document.getElementById('login-error');
-  
-  if (!email || !password) {
-    errEl.style.display = 'block';
-    errEl.innerText = 'Lütfen e-posta ve şifrenizi girin.';
-    return;
-  }
+window.doLogin=async function(){
+  const email=document.getElementById('login-email').value.trim();
+  const pw=document.getElementById('login-password').value;
+  const btn=document.getElementById('login-btn');
+  const err=document.getElementById('login-error');
+  err.style.display='none'; btn.disabled=true; btn.textContent='Giriş yapılıyor...';
+  const {data,error}=await sb.auth.signInWithPassword({email,password:pw});
+  if(error){err.style.display='block';btn.disabled=false;btn.textContent='Giriş Yap';return;}
+  me=data.user; await loadProfile(); showScreen('app'); initApp();
+};
 
-  try {
-    // Backend API'nize veya Neon tablonuza istek atarak kullanıcıyı doğrulayın
-    const res = await fetch('/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
-    });
-    
-    if (!res.ok) throw new Error('Giriş başarısız');
-    
-    const data = await res.json();
-    // Kullanıcı bilgilerini ve token'ı localStorage'a kaydedin
-    localStorage.setItem('user', JSON.stringify(data.user));
-    localStorage.setItem('token', data.token);
-    
-    // Uygulama ekranına geçiş yap
-    showMainApp();
-  } catch (err) {
-    errEl.style.display = 'block';
-    errEl.innerText = 'E-posta veya şifre hatalı.';
-  }
+window.doLogout=async function(){
+  await sb.auth.signOut(); me=myProfile=myGroup=null; clearInterval(notifTimer); showScreen('login');
+};
+
+async function loadProfile(){
+  const {data}=await sb.from('profiles').select('*').eq('id',me.id).single();
+  myProfile=data;
 }
 
-// ── PROFILE DISPLAY ─────────────────────────────────────────
 function updateProfileDisplay(){
   const name=myProfile?.full_name||myProfile?.username||'?';
   const init=name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
@@ -740,7 +664,6 @@ function updateProfileDisplay(){
   const epEl=document.getElementById('edit-password'); if(epEl) epEl.value='';
 }
 
-// ── INIT ──────────────────────────────────────────────────────
 async function initApp(){
   const init=(myProfile?.full_name||myProfile?.username||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
   document.getElementById('user-avatar').textContent=init;
@@ -749,9 +672,7 @@ async function initApp(){
   if(myProfile?.role==='admin'){ const nav=document.getElementById('nav-admin'); if(nav) nav.style.display='flex'; await loadAdminGroups(); await loadAdminAllMembers(); }
   await loadMyGroup();
   await loadHome(); await loadReport();
-  await loadNotifSettings(); scheduleNotif();
-  // Uygulama açılışında veriyi tazele
-  setInterval(loadHome, 5*60*1000); // 5 dakikada bir arka planda güncelle
+  setInterval(loadHome, 5*60*1000);
 }
 
 window.saveProfile=async function(){
@@ -759,12 +680,9 @@ window.saveProfile=async function(){
   const password=document.getElementById('edit-password').value;
   if(!fullname) return toast('Ad Soyad gerekli','error');
 
-  // Ad Soyad güncelle
   const {error:profErr}=await sb.from('profiles').update({full_name:fullname}).eq('id',me.id);
   if(profErr){toast('Hata: '+profErr.message,'error');return;}
 
-
-  // Şifre değişikliği
   if(password){
     if(password.length<6){toast('Şifre en az 6 karakter olmalı','error');return;}
     const {error:pwErr}=await sb.auth.updateUser({password});
@@ -776,14 +694,6 @@ window.saveProfile=async function(){
   toast('Profil güncellendi! ✓','success');
 };
 
-window.sendPasswordReset=async function(){
-  const {error}=await sb.auth.resetPasswordForEmail(me.email,{
-    redirectTo: window.location.href
-  });
-  if(error){toast('Hata: '+error.message,'error');return;}
-  toast('Şifre sıfırlama maili gönderildi: '+me.email,'success');
-};
-
 async function loadMyGroup(){
   try {
     const {data}=await sb.from('group_members').select('group_id,reading_groups(*,books(*))').eq('user_id',me.id).limit(1).maybeSingle();
@@ -793,9 +703,7 @@ async function loadMyGroup(){
       document.getElementById('header-group-name').textContent = myGroup.name;
       document.getElementById('header-group-label').textContent = myGroup.name;
       
-      // 🔥 KRİTİK DÜZELTME: Grup verisi başarıyla geldiği an Android'i uyandırıyoruz!
       loadUserData(myGroup);
-
     } else {
       document.getElementById('header-group-name').textContent = 'Grup yok';
     }
@@ -804,7 +712,6 @@ async function loadMyGroup(){
   }
 }
 
-// ── HOME ──────────────────────────────────────────────────────
 window.changeHomeWeek=function(diff){
   homeWeekOffset += diff;
   loadHome();
@@ -815,48 +722,37 @@ async function loadHome(){
   const baseDate = new Date();
   baseDate.setDate(baseDate.getDate() + (homeWeekOffset * 7));
 
-
   if(!myGroup){
     document.getElementById('week-body').innerHTML='<tr><td colspan="8" style="padding:20px;text-align:center;color:var(--text2);font-size:.82rem;">Henüz bir gruba atanmadınız</td></tr>';
     ['stat-week','stat-total','stat-delay'].forEach(id=>document.getElementById(id).textContent='—');
     return;
   }
   const goal=myGroup.daily_page_goal;
-  // Son 7 gün (bugün dahil veya seçili hafta)
   const we=new Date(baseDate.getFullYear(),baseDate.getMonth(),baseDate.getDate());
   const ws=new Date(we.getFullYear(),we.getMonth(),we.getDate()-6);
   const wsStr=dateStr(ws), weStr=dateStr(we);
   document.getElementById('week-range').textContent=`${ws.getDate()} ${MNF[ws.getMonth()]} – ${we.getDate()} ${MNF[we.getMonth()]} ${we.getFullYear()}`;
 
-  // Tüm gruplardaki tüm üyeleri çek
   const {data:allMembers}=await sb.from('group_members')
     .select('user_id,group_id,profiles(*),reading_groups(id,name,daily_page_goal)');
   if(!allMembers?.length) return;
 
-  // Kullanıcı başına tek kayıt tut (birden fazla grubu varsa ilkini al)
   const userMap={};
   allMembers.forEach(m=>{
     if(!userMap[m.user_id]) userMap[m.user_id]={...m};
   });
   const members=Object.values(userMap);
-
-  // Tüm grup ID'leri
-  const groupIds=[...new Set(allMembers.map(m=>m.group_id))];
   const mIds=members.map(m=>m.user_id);
 
-  // Bu haftanın loglarını tüm gruplardan çek
   const {data:wLogs}=await sb.from('reading_logs').select('*')
     .gte('log_date',wsStr).lte('log_date',weStr).in('user_id',mIds);
 
-  // Her kullanıcının kendi grubunun hedefini al
   const userGoalMap={};
   allMembers.forEach(m=>{ userGoalMap[m.user_id]=m.reading_groups?.daily_page_goal||goal; });
 
-  // logs map: userId -> dateStr -> log
   const lMap={};
   (wLogs||[]).forEach(l=>{ if(!lMap[l.user_id])lMap[l.user_id]={}; lMap[l.user_id][l.log_date]=l; });
 
-  // Header - son 7 gün, bugünden geriye
   let hHtml='<th class="name-cell">Üye</th>';
   for(let i=0;i<7;i++){
     const d=new Date(ws.getFullYear(),ws.getMonth(),ws.getDate()+i);
@@ -866,12 +762,10 @@ async function loadHome(){
   }
   document.getElementById('week-head').innerHTML=hHtml;
 
-  // Avatar color palette
   const avatarColors=['#3fb950','#388bfd','#bc8cff','#c9a84c','#f85149','#58a6ff','#d29922','#7ee787'];
   const memberColorMap={};
   members.forEach((m,idx)=>{ memberColorMap[m.user_id]=avatarColors[idx%avatarColors.length]; });
 
-  // Sort: me first, then alphabetical
   const sorted=members.slice().sort((a,b)=>a.user_id===me.id?-1:b.user_id===me.id?1:(a.profiles?.full_name||'').localeCompare(b.profiles?.full_name||''));
 
   let bHtml='';
@@ -880,7 +774,6 @@ async function loadHome(){
     const name=m.profiles?.full_name||m.profiles?.username||'?';
     const avColor=memberColorMap[m.user_id]||'#388bfd';
     const avInit=name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
-    const memberGoal=userGoalMap[m.user_id]||goal;
     let row=`<tr class="${isMe?'me-row':''}"><td class="name-cell"><span class="row-avatar" style="background:${avColor}">${avInit}</span>${name}</td>`;
     for(let i=0;i<7;i++){
       const d=new Date(ws.getFullYear(),ws.getMonth(),ws.getDate()+i);
@@ -890,8 +783,8 @@ async function loadHome(){
       let cls='dot-future',sym='';
       if(!future){
         if(log?.is_compensatory){cls='dot-yellow';sym='◐';}
-        else if(log&&log.pages_read>memberGoal){cls='dot-blue';sym='➕';}
-        else if(log&&log.pages_read>=memberGoal){cls='dot-green';sym='✓';}
+        else if(log&&log.pages_read>goal){cls='dot-blue';sym='➕';}
+        else if(log&&log.pages_read>=goal){cls='dot-green';sym='✓';}
         else if(log&&log.pages_read>0){cls='dot-yellow';sym='~';}
         else{cls='dot-red';sym='✗';}
       }
@@ -901,12 +794,8 @@ async function loadHome(){
   });
   document.getElementById('week-body').innerHTML=bHtml;
 
- // My stats
   const {data:myLogs}=await sb.from('reading_logs').select('*').eq('user_id',me.id).eq('group_id',myGroup.id).order('log_date',{ascending:false});
-  const myMap={}; (myLogs||[]).forEach(l=>myMap[l.log_date]=l);
   
-  // İstatistik başlangıç tarihini belirle: Grubun başlangıcı mı yoksa kullanıcının eklenme tarihi mi?
-  // Hangisi daha sonraysa o tarihten itibaren hesapla.
   const groupStart = new Date(myGroup.start_date);
   const userJoin = new Date(myProfile.created_at);
   const effectiveStart = userJoin > groupStart ? userJoin : groupStart;
@@ -923,39 +812,8 @@ async function loadHome(){
   const de=document.getElementById('stat-delay'), dl=document.getElementById('stat-delay-label');
   if(diff>=0){de.textContent='+'+diff;de.className='sv green';dl.textContent='sayfa';}
   else{de.textContent=diff;de.className='sv red';dl.textContent='sayfa';}
-
-
 }
 
-
-// ── MEMBERS ───────────────────────────────────────────────────
-async function loadMembers(){
-  if(!myGroup){ document.getElementById('members-list').innerHTML='<div class="empty"><div class="eico">👥</div><p>Henüz bir gruba atanmadınız</p></div>'; return; }
-  const today=todayStr();
-  document.getElementById('members-subtitle').textContent=`${myGroup.name} — Bugün`;
-  const {data:members}=await sb.from('group_members').select('user_id,profiles(*)').eq('group_id',myGroup.id);
-  const {data:logs}=await sb.from('reading_logs').select('*').eq('group_id',myGroup.id).eq('log_date',today);
-  const lm={}; (logs||[]).forEach(l=>lm[l.user_id]=l);
-  const goal=myGroup.daily_page_goal;
-  const sorted=(members||[]).slice().sort((a,b)=>{
-    const s=l=>!l?0:l.is_compensatory?2:l.pages_read>=goal?3:1;
-    return s(lm[b.user_id])-s(lm[a.user_id]);
-  });
-  let html='';
-  sorted.forEach(m=>{
-    const log=lm[m.user_id], name=m.profiles?.full_name||m.profiles?.username||'?';
-    const ini=name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
-    let av='',bc='',bt='',meta='';
-    if(!log){av='';bc='b-none';bt='— Girmemiş';meta='Bugün kayıt yok';}
-    else if(log.is_compensatory){av='comp';bc='b-comp';bt='◐ Telafi';meta=`${log.pages_read} sayfa (telafi)`;}
-    else if(log.pages_read>=goal){av='ok';bc='b-ok';bt='✓ Zamanında';meta=`${log.pages_read} sayfa okundu`;}
-    else{av='late';bc='b-late';bt='✗ Gecikmeli';meta=`${log.pages_read}/${goal} sayfa`;}
-    html+=`<div class="mi"><div class="mav ${av}">${ini}</div><div class="minfo"><div class="mname">${name}${m.profiles?.role==='admin'?'<span class="atag">ADMİN</span>':''}</div><div class="mmeta">${meta}</div></div><span class="badge ${bc}">${bt}</span></div>`;
-  });
-  document.getElementById('members-list').innerHTML=html||'<div class="empty"><p>Üye yok</p></div>';
-}
-
-// ── REPORT ────────────────────────────────────────────────────
 window.changeReportOffset=function(diff){
   reportOffset += diff;
   loadReport();
@@ -964,13 +822,11 @@ window.changeReportOffset=function(diff){
 async function loadReport(){
   const now=new Date(), today=todayStr();
 
-  // Son 30 günü hesapla (offset ile)
   const mEnd=new Date(now.getFullYear(),now.getMonth(),now.getDate());
   mEnd.setDate(mEnd.getDate() + (reportOffset * 30));
   const mStart=new Date(mEnd); mStart.setDate(mStart.getDate()-29);
   const mStartStr=dateStr(mStart), mEndStr=dateStr(mEnd);
 
-  // Son 7 gün (sıralama için)
   const we=new Date(now.getFullYear(),now.getMonth(),now.getDate());
   const ws=new Date(we.getFullYear(),we.getMonth(),we.getDate()-6);
   const wsStr=dateStr(ws), weStr=dateStr(we);
@@ -983,14 +839,12 @@ async function loadReport(){
   }
   const goal=myGroup.daily_page_goal;
 
-  // Son 30 günün loglarını çek
   const {data:myLogs}=await sb.from('reading_logs').select('*')
     .eq('user_id',me.id).eq('group_id',myGroup.id)
     .gte('log_date',mStartStr).lte('log_date',mEndStr)
     .order('log_date',{ascending:true});
   const lm={}; (myLogs||[]).forEach(l=>lm[l.log_date]=l);
 
-  // İstatistikler
   let totalPages=0, daysOk=0, daysComp=0, daysIlave=0, daysMiss=0;
   for(let i=0;i<30;i++){
     const d=new Date(mStart.getFullYear(),mStart.getMonth(),mStart.getDate()+i);
@@ -1004,7 +858,6 @@ async function loadReport(){
     else{daysMiss++;totalPages+=log.pages_read;}
   }
 
-  // Özet kartlar
   const summaryHtml=`<div class="stat-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:14px;">
     <div class="stat-card"><div class="sl">Toplam</div><div class="sv" style="font-size:1.1rem;">${totalPages}</div><div class="ssub">sayfa</div></div>
     <div class="stat-card"><div class="sl" style="color:#00c462;">Tamam</div><div class="sv" style="font-size:1.1rem;color:#00c462;">${daysOk}</div><div class="ssub">gün</div></div>
@@ -1012,19 +865,13 @@ async function loadReport(){
     <div class="stat-card"><div class="sl" style="color:var(--red);">Eksik</div><div class="sv" style="font-size:1.1rem;color:var(--red);">${daysMiss}</div><div class="ssub">gün</div></div>
   </div>`;
 
-  // Takvim: 30 günlük, Pazartesi başlangıçlı 7 sütun grid
-  // İlk günün haftanın kaçıncı günü olduğunu bul (0=Pzt)
   const firstDow=(mStart.getDay()+6)%7;
-  // Takvim başlangıcı: mStart'ın haftasının Pazartesi'si
   const calStart=new Date(mStart.getFullYear(),mStart.getMonth(),mStart.getDate()-firstDow);
-
-  // Kaç satır gerekli?
   const lastDay=new Date(mEnd.getFullYear(),mEnd.getMonth(),mEnd.getDate());
   const lastDow=(lastDay.getDay()+6)%7;
   const calEnd=new Date(lastDay.getFullYear(),lastDay.getMonth(),lastDay.getDate()+(6-lastDow));
   const totalCells=Math.round((calEnd-calStart)/86400000)+1;
 
-  // Gün başlıkları
   let calHtml=`<div class="cal-header">`;
   ['Pzt','Sal','Çar','Per','Cum','Cmt','Paz'].forEach(d=>{
     calHtml+=`<div class="cal-head-cell">${d}</div>`;
@@ -1062,7 +909,6 @@ async function loadReport(){
   }
   calHtml+=`</div>`;
 
-  // Renk açıklaması
   const legendHtml=`<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;">
     <span style="display:flex;align-items:center;gap:4px;font-size:.7rem;color:var(--text2);"><span style="width:10px;height:10px;border-radius:3px;background:#00c462;display:inline-block;"></span>Zamanında</span>
     <span style="display:flex;align-items:center;gap:4px;font-size:.7rem;color:var(--text2);"><span style="width:10px;height:10px;border-radius:3px;background:#2563eb;display:inline-block;"></span>İlave</span>
@@ -1072,11 +918,10 @@ async function loadReport(){
 
   document.getElementById('my-weekly-report').innerHTML=summaryHtml+calHtml+legendHtml;
 
-  // Son 7 gün sıralaması - tüm gruplardan
   const {data:allGM}=await sb.from('group_members').select('user_id,profiles(*),reading_groups(daily_page_goal)');
   const {data:gLogs}=await sb.from('reading_logs').select('user_id,pages_read').gte('log_date',wsStr).lte('log_date',weStr);
   const uwp={}; (gLogs||[]).forEach(l=>uwp[l.user_id]=(uwp[l.user_id]||0)+l.pages_read);
-  // Kullanıcı başına tek kayıt
+  
   const userMapR={};
   (allGM||[]).forEach(m=>{ if(!userMapR[m.user_id]) userMapR[m.user_id]=m; });
   const allUsers=Object.values(userMapR);
@@ -1093,13 +938,11 @@ async function loadReport(){
   document.getElementById('group-weekly-report').innerHTML=gh||'<div class="empty"><p>Veri yok</p></div>';
 }
 
-// ── LOG ACTIONS ───────────────────────────────────────────────
 window.openIlaveModal=async function(){
   if(!myGroup) return toast('Aktif grup bulunamadı','error');
   const now=new Date(), today=todayStr();
   const goal=myGroup.daily_page_goal;
 
-  // Son 7 gün (bugün dahil)
   const days=[];
   for(let i=0;i<7;i++){
     const d=new Date(now.getFullYear(),now.getMonth(),now.getDate()-i);
@@ -1114,7 +957,6 @@ window.openIlaveModal=async function(){
   const logMap={};
   (logs||[]).forEach(l=>{ logMap[l.log_date]=l; });
 
-  // Sadece okuma veya telafi girilmiş günleri göster (hedef sayfa girilmiş)
   const validDays=days.filter(({ds})=>logMap[ds] && logMap[ds].pages_read>=goal);
 
   const listEl=document.getElementById('ilave-days-list');
@@ -1182,16 +1024,15 @@ window.submitIlaveLog=async function(){
   toast(`+${pages} sayfa ilave kaydedildi! ➕`,'success');
   await loadHome();
 };
+
 window.logToday=async function(){
   if(!myGroup) return toast('Aktif grup bulunamadı','error');
   const today=todayStr();
 
-  // Bugün kayıt var mı kontrol et
   const {data:ex}=await sb.from('reading_logs').select('id,pages_read,is_compensatory')
     .eq('user_id',me.id).eq('group_id',myGroup.id).eq('log_date',today).maybeSingle();
 
   if(ex){
-    // Daha önce girilmiş — onay iste
     const tip=ex.is_compensatory?'telafi':'zamanında';
     const confirmed=confirm(
       `Bugün zaten ${ex.pages_read} sayfa (${tip}) kaydedilmiş.\n\nÜzerine yazmak istiyor musunuz?`
@@ -1201,27 +1042,24 @@ window.logToday=async function(){
 
   await saveLog(today, myGroup.daily_page_goal, '', false);
 };
+
 window.openCompModal=async function(){
   if(!myGroup) return toast('Aktif grup bulunamadı','error');
   const now=new Date(), today=todayStr();
   const goal=myGroup.daily_page_goal;
 
-  // Son 7 gün (bugün dahil)
   const pastDays=[];
   for(let i=0;i<7;i++){
     const d=new Date(now.getFullYear(),now.getMonth(),now.getDate()-i);
     pastDays.push({d, ds:dateStr(d)});
   }
 
-  // Bu günlerin loglarını çek
   const startDs=dateStr(pastDays[pastDays.length-1].d);
   const {data:logs}=await sb.from('reading_logs').select('log_date,pages_read,is_compensatory')
     .eq('user_id',me.id).eq('group_id',myGroup.id)
     .gte('log_date',startDs).lte('log_date',today);
 
   const loggedDays=new Set((logs||[]).filter(l=>l.pages_read>=goal).map(l=>l.log_date));
-
-  // Hedef sayıya ulaşılmamış günleri göster
   const missingDays=pastDays.filter(({ds})=>!loggedDays.has(ds));
 
   const listEl=document.getElementById('comp-days-list');
@@ -1260,6 +1098,7 @@ window.submitCompLog=async function(date){
   closeModal('log-modal');
   await saveLog(date,myGroup.daily_page_goal,'',true);
 };
+
 async function saveLog(date,pages,note,isComp){
   const {data:ex}=await sb.from('reading_logs').select('id').eq('user_id',me.id).eq('group_id',myGroup.id).eq('log_date',date).maybeSingle();
   const payload={pages_read:pages,note:note||null,is_compensatory:isComp};
@@ -1272,26 +1111,22 @@ async function saveLog(date,pages,note,isComp){
   await loadHome();
 }
 
-// ── ADMIN: GROUPS ─────────────────────────────────────────────
 async function loadAdminAllMembers(){
   const el=document.getElementById('admin-all-members');
   if(!el) return;
 
-  // Tüm grupları ve üyeleri çek
   const {data:groups}=await sb.from('reading_groups').select('id,name,daily_page_goal,start_date,books(title)').order('name');
   if(!groups?.length){ el.innerHTML='<div style="font-size:.82rem;color:var(--text2);text-align:center;padding:16px;">Henüz grup yok</div>'; return; }
 
   const {data:members}=await sb.from('group_members').select('group_id,user_id,profiles(id,full_name,username,role,email)');
   const {data:allLogs}=await sb.from('reading_logs').select('user_id,group_id,pages_read');
 
-  // Toplam sayfa per user per group
   const pageMap={};
   (allLogs||[]).forEach(l=>{
     const k=l.user_id+'_'+l.group_id;
     pageMap[k]=(pageMap[k]||0)+l.pages_read;
   });
 
-  // Group members map
   const groupMap={};
   (members||[]).forEach(m=>{
     if(!groupMap[m.group_id]) groupMap[m.group_id]=[];
@@ -1318,16 +1153,12 @@ async function loadAdminAllMembers(){
         const pages=pageMap[m.user_id+'_'+g.id]||0;
         const colors=['#3fb950','#388bfd','#bc8cff','#c9a84c','#f85149','#58a6ff'];
         const col=colors[name.charCodeAt(0)%colors.length];
-        const uid=m.user_id;
         const currentRole=m.profiles?.role||'user';
         html+=`<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);">
           <div style="width:30px;height:30px;border-radius:50%;background:${col};display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;color:#fff;flex-shrink:0;">${init}</div>
           <div style="flex:1;min-width:0;">
             <div style="font-size:.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${name}</div>
             <div style="font-size:.68rem;color:var(--text2);">${pages} sayfa · ${currentRole==='admin'?'<span style=color:var(--accent)>Yönetici</span>':'Kullanıcı'}</div>
-          </div>
-          <div style="display:flex;gap:4px;flex-shrink:0;">
-
           </div>
         </div>`;
       });
@@ -1350,65 +1181,14 @@ async function loadAdminGroups(){
     </div>
   </div>`).join('');
 }
-// Rol değiştir
-window.toggleRole=async function(uid, currentRole){
-  const newRole=currentRole==='admin'?'user':'admin';
-  const label=newRole==='admin'?'Yönetici':'Kullanıcı';
-  if(!confirm(`Bu kullanıcıyı "${label}" yapmak istiyor musunuz?`)) return;
-  const {error}=await sb.from('profiles').update({role:newRole}).eq('id',uid);
-  if(error){toast('Hata: '+error.message,'error');return;}
-  toast(`Rol "${label}" olarak güncellendi ✓`,'success');
-  await loadAdminAllMembers();
-};
-
-// Şifre sıfırla - admin yeni şifre belirler
-window.resetPassword=async function(uid, name){
-  const newPw=prompt(`"${name}" için yeni şifre girin:\n(En az 6 karakter)`);
-  if(newPw===null) return;
-  if(!newPw||newPw.trim().length<6){toast('Şifre en az 6 karakter olmalı','error');return;}
-
-  // Admin oturumunu sakla
-  const {data:{session:adminSess}}=await sb.auth.getSession();
-  if(!adminSess){toast('Oturum bulunamadı','error');return;}
-
-  // Kullanıcının emailini al
-  const {data:prof}=await sb.from('profiles').select('email').eq('id',uid).maybeSingle();
-  if(!prof?.email){toast('E-posta bulunamadı','error');return;}
-
-  // O kullanıcı olarak giriş yap ve şifre değiştir
-  const {data:signInData,error:signInErr}=await sb.auth.signInWithPassword({
-    email:prof.email, password:'risale2025'
-  });
-
-  if(signInErr){
-    // Direkt giriş yapılamadı - mail yolla
-    const {error:mailErr}=await sb.auth.resetPasswordForEmail(prof.email,{
-      redirectTo:window.location.href
-    });
-    if(mailErr){toast('Hata: '+mailErr.message,'error');return;}
-    // Admin oturumuna geri dön
-    await sb.auth.setSession({access_token:adminSess.access_token,refresh_token:adminSess.refresh_token});
-    toast(`${prof.email} adresine sıfırlama maili gönderildi`,'success');
-    return;
-  }
-
-  // Şifreyi güncelle
-  const {error:pwErr}=await sb.auth.updateUser({password:newPw.trim()});
-  
-  // Admin oturumuna geri dön
-  await sb.auth.setSession({access_token:adminSess.access_token,refresh_token:adminSess.refresh_token});
-  
-  if(pwErr){toast('Şifre güncellenemedi: '+pwErr.message,'error');return;}
-  toast(`"${name}" şifresi güncellendi ✓`,'success');
-};
 
 window.openDeleteUserModal=async function(){
   const {data:profiles}=await sb.from('profiles').select('id,full_name,username').order('full_name');
   const list=document.getElementById('delete-user-check-list');
-  // Kendi hesabını gösterme
   list.innerHTML=(profiles||[]).filter(p=>p.id!==me.id).map(p=>`<div class="ucl-item"><input type="checkbox" id="duc-${p.id}" value="${p.id}"/><label for="duc-${p.id}">${p.full_name||p.username}</label></div>`).join('');
   openM('delete-user-modal');
 };
+
 window.deleteUser=async function(){
   const boxes=document.querySelectorAll('#delete-user-check-list input[type=checkbox]');
   const selIds=[...boxes].filter(c=>c.checked).map(c=>c.value);
@@ -1421,7 +1201,6 @@ window.deleteUser=async function(){
   let successCount = 0;
   for(const uid of selIds){
     try {
-      // Tüm ilişkili verileri sil
       await sb.from('reading_logs').delete().eq('user_id',uid);
       await sb.from('group_members').delete().eq('user_id',uid);
       await sb.from('notification_settings').delete().eq('user_id',uid);
@@ -1432,11 +1211,11 @@ window.deleteUser=async function(){
 
   btn.disabled=false; btn.textContent='🗑️ Seçili Kullanıcıları Sil';
   closeModal('delete-user-modal');
-  toast(`${successCount} kullanıcı ve tüm kayıtları silindi. Auth kayıtları için Dashboard kullanın.`,'success');
+  toast(`${successCount} kullanıcı ve tüm kayıtları silindi.`,'success');
 
-  // Kullanıcı listesini güncelle
   if(myProfile?.role==='admin') await loadAdminAllMembers();
 };
+
 window.deleteGroup=async function(gid,gname){
   if(!confirm(`"${gname}" grubunu silmek istediğinize emin misiniz?\nTüm okuma kayıtları silinecek!`)) return;
   await sb.from('reading_logs').delete().eq('group_id',gid);
@@ -1446,6 +1225,7 @@ window.deleteGroup=async function(gid,gname){
   toast('Grup silindi','success');
   await loadAdminGroups(); await loadMyGroup(); await loadHome();
 };
+
 window.openEditGroup=function(gid){
   const g=allGroups.find(x=>x.id===gid); if(!g) return;
   document.getElementById('edit-group-id').value=g.id;
@@ -1454,6 +1234,7 @@ window.openEditGroup=function(gid){
   document.getElementById('edit-group-start').value=g.start_date;
   openM('edit-group-modal');
 };
+
 window.saveGroupEdit=async function(){
   const id=document.getElementById('edit-group-id').value;
   const name=document.getElementById('edit-group-name').value.trim();
@@ -1466,18 +1247,17 @@ window.saveGroupEdit=async function(){
   await loadAdminGroups(); await loadMyGroup(); await loadHome();
 };
 
-// ── ADMIN: CREATE USER ────────────────────────────────────────
 window.openAddUserModal=async function(){
   document.getElementById('new-user-fullname').value='';
   document.getElementById('new-user-email').value='';
   document.getElementById('new-user-password').value='risale2025';
-  // Grup listesini doldur
   const {data:groups}=await sb.from('reading_groups').select('id,name').order('name');
   const gSel=document.getElementById('new-user-group');
   gSel.innerHTML='<option value="">— Grup seçin (opsiyonel) —</option>';
   (groups||[]).forEach(g=>{ gSel.innerHTML+=`<option value="${g.id}">${g.name}</option>`; });
   openM('add-user-modal');
 };
+
 window.createUser=async function(){
   const email=document.getElementById('new-user-email').value.trim();
   const fullname=document.getElementById('new-user-fullname').value.trim();
@@ -1488,16 +1268,13 @@ window.createUser=async function(){
   if(!email||!fullname) return toast('Ad Soyad ve e-posta gerekli','error');
   if(!password||password.length<6) return toast('Şifre en az 6 karakter olmalı','error');
 
-  // Mevcut admin oturumunu sakla
   const {data:{session:adminSession}}=await sb.auth.getSession();
 
-  // Yeni kullanıcı oluştur
   const {data,error}=await sb.auth.signUp({email,password,options:{data:{username,full_name:fullname}}});
   if(error){toast('Hata: '+error.message,'error');return;}
   if(!data.user){toast('Kullanıcı oluşturulamadı','error');return;}
   const newUserId=data.user.id;
 
-  // Admin oturumunu geri yükle
   if(adminSession){
     await sb.auth.setSession({
       access_token:adminSession.access_token,
@@ -1505,13 +1282,10 @@ window.createUser=async function(){
     });
   }
 
-  // Profil güncelle
   await new Promise(r=>setTimeout(r,800));
   await sb.from('profiles').update({role,full_name:fullname,username,email}).eq('id',newUserId);
 
-  // Gruba ekle
   if(groupId){
-    // Diğer gruplardan çıkar (tek grup kuralı)
     await sb.from('group_members').delete().eq('user_id',newUserId).neq('group_id',groupId);
     await sb.from('group_members').upsert({group_id:groupId,user_id:newUserId},{onConflict:'group_id,user_id'});
   }
@@ -1521,8 +1295,8 @@ window.createUser=async function(){
   if(myProfile?.role==='admin'){ await loadAdminGroups(); await loadAdminAllMembers(); }
 };
 
-// ── ADMIN: CREATE BOOK/GROUP ──────────────────────────────────
 window.openAddBookModal=function(){ document.getElementById('group-start-date').value=todayStr(); openM('add-book-modal'); };
+
 window.createBookGroup=async function(){
   const title=document.getElementById('book-title').value.trim();
   const author=document.getElementById('book-author').value.trim();
@@ -1539,7 +1313,6 @@ window.createBookGroup=async function(){
   await loadAdminGroups(); await loadMyGroup();
 };
 
-// ── ADMIN: MANAGE MEMBERS ─────────────────────────────────────
 window.openManageGroupModal=async function(){
   const {data:groups,error:gErr}=await sb.from('reading_groups').select('id,name').order('created_at',{ascending:false});
   if(gErr){toast('Gruplar yüklenemedi: '+gErr.message,'error');return;}
@@ -1550,12 +1323,14 @@ window.openManageGroupModal=async function(){
   openM('manage-group-modal');
   await loadGroupMembersForManage();
 };
+
 window.loadGroupMembersForManage=async function(){
   const gid=document.getElementById('manage-group-select').value; if(!gid) return;
   const {data:members}=await sb.from('group_members').select('user_id').eq('group_id',gid);
   const mSet=new Set((members||[]).map(m=>m.user_id));
   document.getElementById('user-check-list').innerHTML=allProfiles.map(p=>`<div class="ucl-item"><input type="checkbox" id="uc-${p.id}" value="${p.id}" ${mSet.has(p.id)?'checked':''}/><label for="uc-${p.id}">${p.full_name||p.username}</label></div>`).join('');
 };
+
 window.saveGroupMembers=async function(){
   const gid=document.getElementById('manage-group-select').value; if(!gid) return;
   const boxes=document.querySelectorAll('#user-check-list input[type=checkbox]');
@@ -1565,7 +1340,6 @@ window.saveGroupMembers=async function(){
   const toAdd=selIds.filter(id=>!curSet.has(id));
   const toRem=[...curSet].filter(id=>!selSet.has(id));
   if(toAdd.length){
-    // Önce diğer gruplardan çıkar (bir kullanıcı sadece bir grupta olabilir)
     for(const uid of toAdd){
       await sb.from('group_members').delete().eq('user_id',uid).neq('group_id',gid);
     }
@@ -1577,41 +1351,29 @@ window.saveGroupMembers=async function(){
   await loadMyGroup(); await loadHome();
 };
 
-// ── NAV ───────────────────────────────────────────────────────
 window.switchPage=function(name,btn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
   btn.classList.add('active');
   if(name==='home') loadHome();
-
   if(name==='report') loadReport();
 };
 
-// ── RECOVERY URL HANDLER ─────────────────────────────────
-// Supabase şifre sıfırlama linkinden gelince hash'i yakala
 async function handleAuthCallback(){
   const hash=window.location.hash;
   const search=window.location.search;
-  const fullUrl=window.location.href;
 
-  // Hata kontrolü (#error=access_denied vs)
   if(hash && hash.includes('error=')){
     const params=new URLSearchParams(hash.replace(/^#/,''));
     const errDesc=params.get('error_description')||params.get('error')||'Bilinmeyen hata';
-    const errCode=params.get('error_code')||'';
     history.replaceState(null,'',window.location.pathname);
     document.getElementById('app-loading').classList.add('hidden');
     showScreen('login');
-    if(errCode==='otp_expired'){
-      setTimeout(()=>toast('Şifre sıfırlama linki süresi dolmuş. Lütfen tekrar talep edin.','error'),300);
-    } else {
-      setTimeout(()=>toast('Hata: '+decodeURIComponent(errDesc.replace(/\+/g,' ')),'error'),300);
-    }
+    setTimeout(()=>toast('Hata: '+decodeURIComponent(errDesc.replace(/\+/g,' ')),'error'),300);
     return false;
   }
 
-  // Yöntem 1: PKCE flow - ?code= parametresi (Supabase v2 yeni default)
   if(search.includes('code=')){
     const params=new URLSearchParams(search);
     const code=params.get('code');
@@ -1620,8 +1382,6 @@ async function handleAuthCallback(){
         const {data,error}=await sb.auth.exchangeCodeForSession(code);
         if(!error && data?.session){
           history.replaceState(null,'',window.location.pathname);
-          // Recovery mi kontrol et - session'dan user metadata'ya bak
-          // ya da her code exchange'i recovery say (sadece reset linkinde gelir)
           showPasswordUpdateModal();
           return true;
         }
@@ -1629,7 +1389,6 @@ async function handleAuthCallback(){
     }
   }
 
-  // Yöntem 2: Hash tabanlı (#access_token=...&type=recovery)
   if(hash && hash.length > 1){
     const params=new URLSearchParams(hash.replace(/^#/,''));
     const type=params.get('type');
@@ -1647,7 +1406,6 @@ async function handleAuthCallback(){
     }
   }
 
-  // Yöntem 3: token_hash query string (?token_hash=...&type=recovery)
   if(search.includes('token_hash')){
     const params=new URLSearchParams(search);
     const tokenHash=params.get('token_hash');
@@ -1685,7 +1443,6 @@ window.doUpdatePassword=async function(){
   showScreen('login');
 };
 
-// ── TEMA YÖNETİMİ ─────────────────────────────────────────
 const THEMES=['gece','zeytin','umman','gül','kum'];
 window.setTheme=function(theme){
   document.body.className=document.body.className.replace(/theme-\S+/g,'').trim();
@@ -1703,12 +1460,9 @@ function loadTheme(){
 window.openGuide=function(){ openM('guide-modal'); };
 loadTheme();
 
-// onAuthStateChange BOOT'tan ÖNCE tanımlanmalı - event kaçırılmasın
-// PASSWORD_RECOVERY: Supabase yönlendirmesi sonrası gelir
 let bootDone = false;
 sb.auth.onAuthStateChange((event, session)=>{
   if(event==='PASSWORD_RECOVERY'){
-    // Boot henüz çalışmadıysa loading'i gizle
     document.getElementById('app-loading').classList.add('hidden');
     showPasswordUpdateModal();
     bootDone = true;
