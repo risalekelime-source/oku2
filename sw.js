@@ -1,7 +1,9 @@
-const CACHE = 'risale-v13';
+const CACHE = 'risale-v14';
 const ASSETS = ['/oku/', '/oku/index.html', '/oku/manifest.json', '/oku/icon-192.png', '/oku/icon-512.png'];
-const SUPABASE_URL = 'https://rrupsidrdgwgagetcojx.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_lQXYDZqUPATZNwM8Cb17kg_F-T1XsOI';
+
+// Supabase REST yerine kendi backend endpoint'in (bkz. api-reminder-status.js).
+// Farkli bir alan adinda ise tam URL yaz: 'https://api.ornek.com/api/reminder-status'
+const API_URL = '/api/reminder-status';
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));
@@ -10,14 +12,17 @@ self.addEventListener('install', e => {
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys()
-      .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
+      .then(keys => Promise.all(keys.filter(k => k !== CACHE && k !== 'notif-config').map(k => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });
 
 self.addEventListener('fetch', e => {
-  if (!e.request.url.startsWith(self.location.origin)) return;
+  const url = new URL(e.request.url);
+  if (url.origin !== self.location.origin) return;
   if (e.request.method !== 'GET') return;
+  // API cevaplari cache'lenmez (eski veri gostermesin)
+  if (url.pathname.startsWith('/api/')) return;
   e.respondWith(
     caches.match(e.request).then(cached => {
       const net = fetch(e.request).then(res => {
@@ -56,13 +61,12 @@ self.addEventListener('periodicsync', e => {
 // ── MESSAGE: ana uygulama SW'ye bildirim zamanı gönderir ─────
 self.addEventListener('message', e => {
   if (e.data?.type === 'SCHEDULE_NOTIF') {
-    const { hour, minute, userId, groupId, goalPages } = e.data;
-    // Alarm bilgisini cache'e kaydet
+    // token: uygulamanin kendi oturum token'i (opsiyonel, backend dogruluyorsa gerekli)
+    const { hour, minute, userId, groupId, goalPages, token } = e.data;
     caches.open('notif-config').then(c => {
-      c.put('config', new Response(JSON.stringify({ hour, minute, userId, groupId, goalPages, lastNotifDate: '' })));
+      c.put('config', new Response(JSON.stringify({ hour, minute, userId, groupId, goalPages, token, lastNotifDate: '' })));
     });
-    // İlk kontrolü yap
-    checkNotifFromSW({ hour, minute, userId, groupId, goalPages });
+    checkNotifFromSW({ hour, minute, userId, groupId, goalPages, token });
   }
   if (e.data?.type === 'CHECK_NOTIF') {
     tryNotify();
@@ -95,7 +99,7 @@ async function tryNotify() {
 }
 
 async function checkNotifFromSW(cfg) {
-  const { hour, minute, userId, groupId, goalPages } = cfg;
+  const { hour, minute, userId, groupId, goalPages, token } = cfg;
   if (!userId || !groupId) return;
 
   const now = new Date();
@@ -113,40 +117,25 @@ async function checkNotifFromSW(cfg) {
   const windowClients = await clients.matchAll({ type: 'window', includeUncontrolled: true });
   if (windowClients.length > 0) return;
 
-  // Supabase'den bugünkü logu kontrol et
+  // Tek istek: bugün okuma var mı + bugün kaç kişi okudu
+  let status;
   try {
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/reading_logs?select=id&user_id=eq.${userId}&group_id=eq.${groupId}&log_date=eq.${today}&limit=1`,
-      { headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } }
-    );
-    const logs = await res.json();
-    if (!logs || logs.length > 0) {
-      // Zaten okuma var, sadece tarihi güncelle
-      await saveConfig({ ...cfg2, lastNotifDate: today });
-      return;
-    }
+    const qs = new URLSearchParams({ userId, groupId, date: today });
+    const res = await fetch(`${API_URL}?${qs}`, {
+      headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+      cache: 'no-store'
+    });
+    if (!res.ok) return;
+    status = await res.json();
   } catch { return; }
 
-  // Bugün kaç kişi okudu?
-  let readerCount = 0;
-  try {
-    const gmRes = await fetch(
-      `${SUPABASE_URL}/rest/v1/group_members?select=user_id&group_id=eq.${groupId}`,
-      { headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } }
-    );
-    const allMembers = await gmRes.json();
-    const allIds = (allMembers || []).map(m => m.user_id);
-    if (allIds.length) {
-      const inFilter = allIds.map(id => `user_id.eq.${id}`).join(',');
-      const logRes = await fetch(
-        `${SUPABASE_URL}/rest/v1/reading_logs?select=user_id&log_date=eq.${today}&or=(${inFilter})`,
-        { headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } }
-      );
-      const todayLogs = await logRes.json();
-      readerCount = (todayLogs || []).length;
-    }
-  } catch(e) {}
+  if (status.hasLog) {
+    // Zaten okuma var, sadece tarihi güncelle
+    await saveConfig({ ...cfg2, lastNotifDate: today });
+    return;
+  }
 
+  const readerCount = Number(status.readerCount) || 0;
   const readerMsg = readerCount > 0 ? ` Bugün ${readerCount} kişi okumasını yaptı.` : '';
 
   // Bildirim göster
