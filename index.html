@@ -1,0 +1,1706 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+  <meta name="theme-color" content="#0a0e1a"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="Risale Okuma Takip"/>
+  <link rel="manifest" href="manifest.json"/>
+  <link rel="apple-touch-icon" href="icon-192.png"/>
+  <title>Risale Okuma Takip</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap');
+    :root{
+      --bg:#0a0e1a;--bg2:#0f1525;--bg3:#1a2035;
+      --card:#131929;--card2:#1e2640;
+      --border:rgba(255,255,255,0.10);
+      --accent:#f0a500;--accent2:#ffd060;
+      --green:#00d26a;--red:#ff4d4d;--yellow:#ffb800;
+      --blue:#4d9fff;--purple:#c084fc;
+      --text:#f0f4ff;--text2:#8896b3;
+      --r:14px;--rs:9px;--sh:0 4px 24px rgba(0,0,0,0.6);
+      --fd:'Playfair Display',Georgia,serif;
+      --fb:'DM Sans',-apple-system,sans-serif;
+      --st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{-webkit-tap-highlight-color:transparent}
+    body{font-family:var(--fb);background:var(--bg);color:var(--text);min-height:100dvh;overflow-x:hidden}
+    button{font-family:var(--fb);cursor:pointer;border:none;background:none}
+    input,select,textarea{font-family:var(--fb)}
+    ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+    .screen{display:none!important}.screen.active{display:flex!important;flex-direction:column;min-height:100dvh}
+    #app-loading{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;gap:20px}
+    #app-loading.hidden{display:none!important}
+    .logo-big{font-family:var(--fd);font-size:2.4rem;color:var(--accent)}
+    .spinner{width:34px;height:34px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    @keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    #login-screen{align-items:center;justify-content:center;padding:24px;background:radial-gradient(ellipse at 60% 10%,rgba(240,165,0,.12) 0%,transparent 50%),radial-gradient(ellipse at 20% 80%,rgba(77,159,255,.08) 0%,transparent 50%),var(--bg)}
+    .login-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:36px 28px;width:100%;max-width:380px;animation:slideUp .4s ease}
+    .login-logo{text-align:center;margin-bottom:28px}
+    .login-logo .ico{font-size:2.2rem;margin-bottom:6px}
+    .login-logo h1{font-family:var(--fd);font-size:1.8rem;color:var(--accent)}
+    .login-logo p{font-size:.8rem;color:var(--text2);margin-top:4px}
+    .fg{margin-bottom:14px}
+    .fg label{display:block;font-size:.72rem;font-weight:600;color:var(--text2);margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px}
+    .fg input{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--rs);padding:12px 14px;color:var(--text);font-size:.95rem;transition:border-color .2s}
+    .fg input:focus{outline:none;border-color:var(--accent)}
+    .login-btn{width:100%;background:linear-gradient(135deg,#f0a500,#ffd060);color:#1a0800;font-weight:700;font-size:1rem;padding:14px;border-radius:var(--rs);margin-top:8px;transition:opacity .2s,transform .15s}
+    .login-btn:active{transform:scale(.98)}.login-btn:disabled{opacity:.6}
+    .lerr{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);color:var(--red);font-size:.82rem;padding:9px 13px;border-radius:var(--rs);margin-top:10px;display:none}
+    .app-header{background:var(--bg2);border-bottom:1px solid var(--border);padding:calc(var(--st) + 12px) 16px 12px;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+    .hinner{display:flex;align-items:center;justify-content:space-between;max-width:768px;margin:0 auto}
+    .hlogo{font-family:var(--fd);font-size:1.25rem;color:var(--accent);font-weight:700}
+    .hlogo span{font-size:.68rem;color:var(--text2);display:block;font-family:var(--fb);font-weight:400}
+    .hright{display:flex;align-items:center;gap:10px}
+    .avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--accent));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;color:#fff;flex-shrink:0}
+    .logout-btn{font-size:.78rem;color:var(--text2);padding:5px 11px;border:1px solid var(--border);border-radius:20px;transition:all .2s}
+    .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);display:flex;padding-bottom:var(--sb);z-index:100;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+    .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:9px 4px;gap:3px;cursor:pointer;color:var(--text2);font-size:.62rem;font-weight:500;transition:color .2s;border:none;background:none;text-transform:uppercase;letter-spacing:.3px}
+    .nav-item.active{color:var(--accent);text-shadow:0 0 12px rgba(240,165,0,.4)}.nav-item svg{width:21px;height:21px}
+    .ndot{width:4px;height:4px;border-radius:50%;background:var(--accent);margin-top:-1px;opacity:0;transition:opacity .2s}
+    .nav-item.active .ndot{opacity:1}
+    .content{flex:1;overflow-y:auto;padding:16px 14px calc(86px + var(--sb));max-width:768px;margin:0 auto;width:100%}
+    .page{display:none;animation:fadeIn .25s ease}.page.active{display:block}
+    .sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+    .st{font-family:var(--fd);font-size:1.15rem;font-weight:600}
+    .ss{font-size:.78rem;color:var(--text2);margin-top:2px}
+    .card{background:linear-gradient(160deg,var(--card),var(--bg2));border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:11px;box-shadow:var(--sh)}
+    .week-grid{width:100%;border-collapse:collapse;font-size:.78rem}
+    .week-grid th{padding:7px 3px;text-align:center;color:var(--text2);font-weight:700;font-size:.65rem;text-transform:uppercase;letter-spacing:.5px}
+    .week-grid th.today-col{color:var(--accent);position:relative;}
+    .week-grid td{padding:4px 3px;text-align:center;vertical-align:middle}
+    .name-cell{text-align:left!important;padding:4px 6px 4px 2px!important;font-size:.78rem;font-weight:500;white-space:nowrap;min-width:100px;overflow:hidden;text-overflow:ellipsis;max-width:130px;}
+    .dot{width:26px;height:26px;border-radius:7px;margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:800;}
+    .dot-green{background:#00c462;color:#fff;border:1px solid rgba(255,255,255,.25);}
+    .dot-yellow{background:#e09400;color:#fff;border:1px solid rgba(255,255,255,.25);}
+    .dot-blue{background:#2563eb;color:#fff;border:1px solid rgba(255,255,255,.25);}
+    .dot-red{background:#c0392b;color:#fff;border:1px solid rgba(255,255,255,.2);}
+    .dot-empty{background:var(--bg3);color:var(--text2)}
+    .dot-future{background:rgba(255,255,255,.04);color:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.08);}
+    .me-row .name-cell{color:var(--accent);font-weight:700}
+    .today-cell .dot{outline:2px solid var(--accent);outline-offset:1px;}
+    /* .name-cell overrides removed for better fit */
+    .row-avatar{width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700;color:#fff;flex-shrink:0;vertical-align:middle;margin-right:6px;flex-shrink:0;}
+    .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:16px}
+    .stat-card{background:linear-gradient(135deg,var(--card),var(--card2));border:1px solid var(--border);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:3px}
+    .sl{font-size:.68rem;color:var(--text2);font-weight:500;text-transform:uppercase;letter-spacing:.4px}
+    .sv{font-size:1.5rem;font-weight:700;line-height:1}
+    .sv.green{color:var(--green)}.sv.red{color:var(--red)}
+    .ssub{font-size:.72rem;color:var(--text2)}
+    .mi{display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:1px solid var(--border)}
+    .mi:last-child{border-bottom:none}
+    .mav{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--blue));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;color:#fff;flex-shrink:0}
+    .mav.late{background:linear-gradient(135deg,#ef4444,#f97316)}.mav.comp{background:linear-gradient(135deg,#f97316,#eab308)}.mav.ok{background:linear-gradient(135deg,#22c55e,#16a34a)}
+    .minfo{flex:1;min-width:0}
+    .mname{font-weight:600;font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .mmeta{font-size:.73rem;color:var(--text2)}
+    .badge{font-size:.62rem;font-weight:700;padding:3px 7px;border-radius:10px;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap}
+    .b-ok{background:rgba(74,222,128,.15);color:var(--green)}.b-late{background:rgba(248,113,113,.15);color:var(--red)}
+    .b-comp{background:rgba(251,191,36,.15);color:var(--yellow)}.b-none{background:rgba(96,165,250,.12);color:var(--blue)}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px 18px;border-radius:var(--rs);font-weight:600;font-size:.88rem;cursor:pointer;transition:all .2s;border:none}
+    .btn:active{transform:scale(.97)}.btn-primary{background:var(--accent);color:#1a1000}
+    .btn-secondary{background:var(--bg3);color:var(--text);border:1px solid var(--border)}
+    .btn-danger{background:rgba(248,113,113,.12);color:var(--red);border:1px solid rgba(248,113,113,.2)}
+    .btn-read{background:#00c462;color:#003a1c;border:none;font-weight:700;}
+    .btn-comp{background:#f5a800;color:#3a2600;border:none;font-weight:700;}
+    .comp-day-btn:hover{background:var(--card2)!important;border-color:var(--yellow)!important;}
+    .btn-ilave{background:#2563eb;color:#fff;border:none;font-weight:700;}
+    .btn-read.disabled-btn{opacity:.45;cursor:not-allowed;}
+    .btn-block{width:100%;display:flex}.btn:disabled{opacity:.5;cursor:not-allowed}.btn-sm{padding:7px 12px;font-size:.78rem}
+    .fr{margin-bottom:13px}
+    .fr label{display:block;font-size:.72rem;color:var(--text2);margin-bottom:5px;font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+    .fr input,.fr select,.fr textarea{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--rs);padding:11px 13px;color:var(--text);font-size:.9rem;transition:border-color .2s;-webkit-appearance:none}
+    .fr input:focus,.fr select:focus,.fr textarea:focus{outline:none;border-color:var(--accent)}
+    .fr textarea{resize:vertical;min-height:70px}.fr select{cursor:pointer}
+    .tw{display:flex;align-items:center;justify-content:space-between}
+    .toggle{position:relative;width:46px;height:25px;background:var(--bg3);border-radius:13px;cursor:pointer;transition:background .2s;flex-shrink:0}
+    .toggle.on{background:var(--accent)}.toggle::after{content:'';position:absolute;top:3px;left:3px;width:19px;height:19px;background:#fff;border-radius:50%;transition:left .2s}.toggle.on::after{left:24px}
+    #log-modal,#add-user-modal,#add-book-modal,#manage-group-modal,#edit-group-modal,#ilave-modal,#ilave-pages-modal,#delete-user-modal,#guide-modal,#reset-pw-modal,#pw-update-modal{display:none}
+    #log-modal.am,#add-user-modal.am,#add-book-modal.am,#manage-group-modal.am,#edit-group-modal.am,#ilave-modal.am,#ilave-pages-modal.am,#delete-user-modal.am,#guide-modal.am,#reset-pw-modal.am,#pw-update-modal.am{display:block}
+    .mo{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:200;display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px);animation:fadeIn .2s}
+    .modal{background:var(--card);border-radius:var(--r) var(--r) 0 0;padding:22px 18px calc(var(--sb) + 22px);width:100%;max-width:480px;animation:slideUp .3s ease;max-height:90dvh;overflow-y:auto}
+    .mhandle{width:34px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 18px;display:block}
+    .mtitle{font-family:var(--fd);font-size:1.15rem;margin-bottom:18px}
+    .rb-wrap{margin:4px 0}.rb-label{display:flex;justify-content:space-between;font-size:.76rem;color:var(--text2);margin-bottom:3px}
+    .rb{height:7px;background:var(--bg3);border-radius:4px;overflow:hidden}.rbf{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+        /* Takvim grid */
+    .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:4px}
+    .cal-header{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:6px}
+    .cal-head-cell{text-align:center;font-size:.62rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.4px;padding:2px 0}
+    .cal-cell{aspect-ratio:1;min-height:36px;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:default;border:1px solid rgba(255,255,255,.08);}
+    .cal-cell .cc-date{font-size:.7rem;font-weight:700;line-height:1}
+    .cal-cell .cc-pages{font-size:.58rem;font-weight:600;line-height:1;opacity:.9}
+    .cc-ok{background:#00c462;color:#fff;}
+    .cc-ilave{background:#2563eb;color:#fff;}
+    .cc-comp{background:#e09400;color:#fff;}
+    .cc-miss{background:rgba(200,30,30,.4);color:#ffaaaa;border-color:rgba(255,60,60,.3);}
+    .cc-fut{background:rgba(255,255,255,.04);color:rgba(255,255,255,.2);}
+    .cc-empty{background:transparent;border-color:transparent;}
+    .cal-cell.today-cal{outline:2px solid var(--accent);outline-offset:1px;}
+    .user-check-list{max-height:200px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--rs);background:var(--bg2)}
+    .ucl-item{display:flex;align-items:center;gap:10px;padding:10px 13px;border-bottom:1px solid var(--border);cursor:pointer}
+    .ucl-item:last-child{border-bottom:none}.ucl-item input[type=checkbox]{width:16px;height:16px;accent-color:var(--accent);cursor:pointer}
+    .ucl-item label{cursor:pointer;font-size:.88rem;flex:1}
+    .atag{font-size:.6rem;font-weight:700;padding:2px 7px;border-radius:9px;background:rgba(232,184,109,.15);color:var(--accent);margin-left:5px;vertical-align:middle}
+    .group-item{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--border)}
+    .group-item:last-child{border-bottom:none}.group-name{font-weight:600;font-size:.88rem}.group-meta{font-size:.72rem;color:var(--text2);margin-top:2px}
+    .empty{text-align:center;padding:36px 16px;color:var(--text2)}.empty .eico{font-size:2.2rem;margin-bottom:10px}.empty p{font-size:.82rem;line-height:1.5}
+    #toast{position:fixed;bottom:calc(78px + var(--sb) + 8px);left:50%;transform:translateX(-50%) translateY(16px);background:var(--card2);border:1px solid var(--border);color:var(--text);padding:10px 18px;border-radius:28px;font-size:.83rem;font-weight:500;z-index:300;opacity:0;transition:all .3s;white-space:nowrap;pointer-events:none}
+    #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    #toast.success{border-color:var(--green);color:var(--green)}#toast.error{border-color:var(--red);color:var(--red)}
+    .theme-swatch{cursor:pointer;opacity:.7;transition:opacity .2s;}
+    .theme-swatch:hover,.theme-swatch.active{opacity:1;}
+    .theme-swatch.active div:first-child{outline:2px solid var(--accent);outline-offset:2px;}
+    .log-tabs{display:flex;gap:0;margin-bottom:18px;background:var(--bg3);border-radius:var(--rs);padding:3px}
+    .log-tab{flex:1;padding:9px;text-align:center;border-radius:8px;cursor:pointer;font-size:.85rem;font-weight:600;color:var(--text2);transition:all .2s}
+    .log-tab.active{background:var(--card);color:var(--accent)}
+
+    /* ── TEMALAR ─────────────────────────────────────────────── */
+    body.theme-gece{
+      --bg:#0a0e1a;--bg2:#0f1525;--bg3:#1a2035;
+      --card:#131929;--card2:#1e2640;
+      --border:rgba(255,255,255,0.10);
+      --accent:#f0a500;--accent2:#ffd060;
+      --green:#00d26a;--red:#ff4d4d;--yellow:#ffb800;
+      --blue:#4d9fff;--purple:#c084fc;
+      --text:#f0f4ff;--text2:#8896b3;
+    }
+    body.theme-zeytin{
+      --bg:#0d1510;--bg2:#121c14;--bg3:#1a2a1c;
+      --card:#152018;--card2:#1e2e20;
+      --border:rgba(255,255,255,0.09);
+      --accent:#7ecb58;--accent2:#a8e080;
+      --green:#4ade80;--red:#f87171;--yellow:#fbbf24;
+      --blue:#60a5fa;--purple:#a78bfa;
+      --text:#ecfce8;--text2:#7aaa70;
+    }
+    body.theme-umman{
+      --bg:#050e1a;--bg2:#091525;--bg3:#102030;
+      --card:#0c1a2e;--card2:#122040;
+      --border:rgba(255,255,255,0.09);
+      --accent:#38bdf8;--accent2:#7dd3fc;
+      --green:#34d399;--red:#f87171;--yellow:#fbbf24;
+      --blue:#60a5fa;--purple:#a78bfa;
+      --text:#e0f2fe;--text2:#7099b8;
+    }
+    body.theme-gül{
+      --bg:#1a0e14;--bg2:#25121c;--bg3:#341825;
+      --card:#201018;--card2:#2e1522;
+      --border:rgba(255,255,255,0.09);
+      --accent:#f472b6;--accent2:#fbcfe8;
+      --green:#4ade80;--red:#f87171;--yellow:#fbbf24;
+      --blue:#60a5fa;--purple:#c084fc;
+      --text:#fce7f3;--text2:#b07090;
+    }
+    body.theme-kum .login-card,body.theme-kum .modal{box-shadow:0 4px 24px rgba(0,0,0,0.15);}
+    body.theme-kum .fg input,body.theme-kum .fr input,body.theme-kum .fr select,body.theme-kum .fr textarea{background:#fff;border-color:rgba(0,0,0,0.15);color:var(--text);}
+    body.theme-kum .fg input:focus,body.theme-kum .fr input:focus{border-color:var(--accent);}
+    body.theme-kum .bottom-nav,body.theme-kum .app-header{background:rgba(245,240,232,0.95);border-color:rgba(0,0,0,0.1);}
+    body.theme-kum #toast{background:#fff;}
+    body.theme-kum{
+      --bg:#f5f0e8;--bg2:#ede8dc;--bg3:#e0d9cc;
+      --card:#faf7f2;--card2:#f0ebe0;
+      --border:rgba(0,0,0,0.10);
+      --accent:#8b5e2a;--accent2:#b07c3a;
+      --green:#2d7a3a;--red:#c0392b;--yellow:#b07c00;
+      --blue:#1a5fa8;--purple:#6b3fa0;
+      --text:#2c2218;--text2:#7a6850;
+      --sh:0 4px 24px rgba(0,0,0,0.12);
+    }
+  </style>
+</head>
+<body>
+
+<div id="app-loading"><div class="logo-big">📖 Risale Okuma</div><div class="spinner"></div></div>
+
+<div id="login-screen" class="screen">
+  <div class="login-card">
+    <div class="login-logo"><div class="ico">📖</div><h1>Risale Okuma</h1><p>Risale-i Nur okuma takip programı</p></div>
+    <div class="fg"><label>E-posta</label><input type="email" id="login-email" placeholder="ornek@email.com" autocomplete="email"/></div>
+    <div class="fg"><label>Şifre</label><input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password"/></div>
+    <div class="lerr" id="login-error">E-posta veya şifre hatalı.</div>
+    <button class="login-btn" id="login-btn" onclick="doLogin()">Giriş Yap</button>
+    <button onclick="openGuide()" style="width:100%;margin-top:10px;background:transparent;border:1px solid var(--border);color:var(--text2);padding:11px;border-radius:var(--rs);cursor:pointer;font-family:var(--fb);font-size:.85rem;transition:all .2s;">📖 Kullanma Kılavuzu</button>
+  </div>
+</div>
+
+<!-- KILAVUZ MODAL -->
+<div id="guide-modal">
+  <div class="mo" onclick="closeModal('guide-modal')">
+    <div class="modal" style="max-height:88dvh;" onclick="event.stopPropagation()">
+      <span class="mhandle"></span>
+      <div class="mtitle">📖 Kullanma Kılavuzu</div>
+      <div style="font-size:.85rem;line-height:1.7;color:var(--text);">
+
+        <div style="font-weight:700;color:var(--accent);margin-bottom:6px;font-size:.9rem;">🎯 Amaç</div>
+        <p style="margin-bottom:14px;color:var(--text2);">Risale-i Nur okuma gruplarının günlük okuma takibini kolayca yapabilmesi için tasarlanmıştır.</p>
+
+        <div style="font-weight:700;color:var(--accent);margin-bottom:6px;font-size:.9rem;">📖 Okuma Kaydetme</div>
+        <div style="background:var(--bg3);border-radius:var(--rs);padding:12px;margin-bottom:14px;">
+          <div style="margin-bottom:8px;"><span style="background:#00c462;color:#fff;padding:2px 8px;border-radius:5px;font-size:.75rem;font-weight:700;">📖 Okuma</span> <span style="color:var(--text2);margin-left:6px;">Günlük hedefi tamamladığınızda basın. Anında kaydeder.</span></div>
+          <div style="margin-bottom:8px;"><span style="background:#2563eb;color:#fff;padding:2px 8px;border-radius:5px;font-size:.75rem;font-weight:700;">➕ İlave</span> <span style="color:var(--text2);margin-left:6px;">Günlük hedefin üstünde okuma yaptıysanız kullanın.</span></div>
+          <div><span style="background:#e09400;color:#fff;padding:2px 8px;border-radius:5px;font-size:.75rem;font-weight:700;">◐ Telafi</span> <span style="color:var(--text2);margin-left:6px;">Geçmiş okunmayan günleri telafi etmek için kullanın.</span></div>
+        </div>
+
+        <div style="font-weight:700;color:var(--accent);margin-bottom:6px;font-size:.9rem;">📊 Son 7 Gün Tablosu</div>
+        <div style="background:var(--bg3);border-radius:var(--rs);padding:12px;margin-bottom:14px;">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px;">
+            <span style="background:#00c462;color:#fff;padding:2px 8px;border-radius:5px;font-size:.72rem;font-weight:700;">✓ Zamanında</span>
+            <span style="background:#e09400;color:#fff;padding:2px 8px;border-radius:5px;font-size:.72rem;font-weight:700;">◐ Telafi</span>
+            <span style="background:#c0392b;color:#fff;padding:2px 8px;border-radius:5px;font-size:.72rem;font-weight:700;">✗ Eksik</span>
+          </div>
+          <p style="color:var(--text2);font-size:.82rem;">Her satır bir grup üyesi. Sütunlar son 7 gün. Kendi satırınız en üstte gösterilir.</p>
+        </div>
+
+        <div style="font-weight:700;color:var(--accent);margin-bottom:6px;font-size:.9rem;">📅 Aylık Rapor</div>
+        <p style="margin-bottom:14px;color:var(--text2);">Son 30 günün takvim görünümü. Yeşil = zamanında, Mavi = ilave, Sarı = telafi, Kırmızı = eksik.</p>
+
+        <div style="font-weight:700;color:var(--accent);margin-bottom:6px;font-size:.9rem;">📱 Ana Ekrana Ekleme</div>
+        <div style="background:var(--bg3);border-radius:var(--rs);padding:12px;margin-bottom:14px;">
+          <div style="margin-bottom:6px;"><strong>iPhone:</strong> <span style="color:var(--text2);">Safari → Paylaş simgesi → Ana Ekrana Ekle</span></div>
+          <div><strong>Android:</strong> <span style="color:var(--text2);">Chrome → Menü (⋮) → Uygulamayı Yükle</span></div>
+        </div>
+
+        <div style="font-weight:700;color:var(--accent);margin-bottom:6px;font-size:.9rem;">⚙️ Yönetici</div>
+        <p style="color:var(--text2);">Yönetim sekmesinden kullanıcı ekleyebilir, gruplara üye atayabilir, okuma gruplarını düzenleyebilirsiniz.</p>
+
+      </div>
+      <button class="btn btn-secondary btn-block" style="margin-top:16px;" onclick="closeModal('guide-modal')">Kapat</button>
+    </div>
+  </div>
+</div>
+
+<div id="main-app" class="screen">
+  <header class="app-header">
+    <div class="hinner">
+      <div class="hlogo">📖 Risale Oku<span id="header-group-name" style="display:none;">Yükleniyor...</span></div>
+      <div class="hright"><div style="text-align:right;line-height:1.2;margin-right:2px;"><div style="font-size:.8rem;font-weight:600;color:var(--text);" id="header-user-name"></div><div style="font-size:.72rem;color:var(--accent);font-weight:600;letter-spacing:.2px;" id="header-group-label"></div></div><div class="avatar" id="user-avatar">?</div><button class="logout-btn" onclick="doLogout()" title="Çıkış" style="padding:7px 10px;border-radius:8px;display:flex;align-items:center;color:var(--red);border-color:rgba(255,77,77,.3);">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+      </button></div>
+    </div>
+  </header>
+
+  <main class="content">
+    <!-- HOME -->
+    <div class="page active" id="page-home">
+      <!-- İstatistikler - En Üstte -->
+      <div class="stat-grid" style="margin-bottom:10px;">
+        <div class="stat-card" style="align-items:center;text-align:center;"><div class="sl">Son 7 Gün</div><div class="sv" id="stat-week">—</div><div class="ssub">sayfa</div></div>
+        <div class="stat-card" style="align-items:center;text-align:center;"><div class="sl">Toplam</div><div class="sv" id="stat-total">—</div><div class="ssub">sayfa</div></div>
+        <div class="stat-card" style="align-items:center;text-align:center;"><div class="sl">Durum</div><div class="sv" id="stat-delay">—</div><div class="ssub" id="stat-delay-label">sayfa</div></div>
+      </div>
+      <!-- Butonlar -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;">
+        <button class="btn btn-read btn-block" id="btn-read" onclick="logToday()" style="font-size:.82rem;padding:14px 6px;">📖 Okuma</button>
+        <button class="btn btn-ilave btn-block" onclick="openIlaveModal()" style="font-size:.82rem;padding:14px 6px;">➕ İlave</button>
+        <button class="btn btn-comp btn-block" onclick="openCompModal()" style="font-size:.82rem;padding:14px 6px;">◐ Telafi</button>
+      </div>
+      <!-- Bu Hafta tablosu -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <div style="font-family:var(--fd);font-size:1.1rem;font-weight:700;">Son 7 Gün</div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="font-size:.82rem;font-weight:600;color:var(--text2);" id="week-range"></div>
+          <div style="display:flex;gap:4px;">
+            <button class="btn btn-secondary btn-sm" style="padding:4px 8px;" onclick="changeHomeWeek(-1)">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+            <button class="btn btn-secondary btn-sm" style="padding:4px 8px;" onclick="changeHomeWeek(1)">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="padding:12px 4px;overflow-x:auto;width:100%;">
+        <table class="week-grid" id="week-table"><thead><tr id="week-head"></tr></thead><tbody id="week-body"></tbody></table>
+      </div>
+    </div>
+
+
+    <!-- REPORT -->
+    <div class="page" id="page-report">
+      <div class="sh">
+        <div>
+          <div class="st">Aylık Rapor</div>
+          <div class="ss" id="report-week-label"></div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-secondary btn-sm" style="padding:6px 10px;" onclick="changeReportOffset(-1)">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+          <button class="btn btn-secondary btn-sm" style="padding:6px 10px;" onclick="changeReportOffset(1)">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:13px;"><div style="font-weight:600;margin-bottom:11px;font-size:.88rem;">📊 Son 30 Gün</div><div id="my-weekly-report"></div></div>
+      <div class="sh" style="margin-bottom:10px;"><div class="st" style="font-size:1rem;">Son 7 Gün Sıralaması</div></div>
+      <div class="card" id="group-weekly-report"><div class="empty"><div class="eico">📈</div><p>Yükleniyor...</p></div></div>
+    </div>
+
+    <!-- ADMIN -->
+    <div class="page" id="page-admin">
+      <div class="sh"><div class="st">Yönetim Paneli</div></div>
+      <div class="card" style="margin-bottom:11px;">
+        <div style="font-weight:600;margin-bottom:13px;font-size:.88rem;">⚙️ Kullanıcılar & Gruplar</div>
+        <button class="btn btn-secondary btn-block" style="margin-bottom:7px;" onclick="openAddUserModal()">+ Yeni Kullanıcı</button>
+        <button class="btn btn-secondary btn-block" style="margin-bottom:7px;" onclick="openAddBookModal()">+ Kitap / Grup Oluştur</button>
+        <button class="btn btn-secondary btn-block" style="margin-bottom:7px;" onclick="openManageGroupModal()">👥 Gruba Üye Ekle / Çıkar</button>
+        <button class="btn btn-danger btn-block" onclick="openDeleteUserModal()">🗑️ Kullanıcı Sil</button>
+      </div>
+      <!-- Tüm gruplar ve üyeleri -->
+      <div class="sh" style="margin-bottom:10px;"><div class="st" style="font-size:1rem;">Tüm Üyeler</div></div>
+      <div id="admin-all-members"><div style="font-size:.82rem;color:var(--text2);text-align:center;padding:20px;">Yükleniyor...</div></div>
+      <!-- Gruplar listesi -->
+      <div class="sh" style="margin-top:4px;margin-bottom:10px;"><div class="st" style="font-size:1rem;">Gruplar</div></div>
+      <div class="card"><div id="admin-groups-list"><div style="font-size:.82rem;color:var(--text2);">Yükleniyor...</div></div></div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="page" id="page-settings">
+      <div class="sh"><div class="st">Ayarlar</div></div>
+      <!-- Tema Seçici -->
+      <div class="card" style="margin-bottom:11px;">
+        <div style="font-weight:600;margin-bottom:13px;font-size:.88rem;">🎨 Tema</div>
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;">
+          <div onclick="setTheme('gece')" class="theme-swatch" id="sw-gece" title="Gece">
+            <div style="background:#0a0e1a;border:2px solid #0a0e1a;border-radius:8px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">🌙</div>
+            <div style="font-size:.62rem;text-align:center;margin-top:4px;color:var(--text2);">Gece</div>
+          </div>
+          <div onclick="setTheme('zeytin')" class="theme-swatch" id="sw-zeytin" title="Zeytin">
+            <div style="background:#0d1510;border:2px solid #0d1510;border-radius:8px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">🫒</div>
+            <div style="font-size:.62rem;text-align:center;margin-top:4px;color:var(--text2);">Zeytin</div>
+          </div>
+          <div onclick="setTheme('umman')" class="theme-swatch" id="sw-umman" title="Umman">
+            <div style="background:#050e1a;border:2px solid #050e1a;border-radius:8px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">🌊</div>
+            <div style="font-size:.62rem;text-align:center;margin-top:4px;color:var(--text2);">Umman</div>
+          </div>
+          <div onclick="setTheme('gül')" class="theme-swatch" id="sw-gül" title="Gül">
+            <div style="background:#1a0e14;border:2px solid #1a0e14;border-radius:8px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">🌹</div>
+            <div style="font-size:.62rem;text-align:center;margin-top:4px;color:var(--text2);">Gül</div>
+          </div>
+          <div onclick="setTheme('kum')" class="theme-swatch" id="sw-kum" title="Fildişi">
+            <div style="background:#f5f0e8;border:2px solid #c8b89a;border-radius:8px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">☀️</div>
+            <div style="font-size:.62rem;text-align:center;margin-top:4px;color:var(--text2);">Fildişi</div>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:11px;">
+        <div style="font-weight:600;margin-bottom:16px;font-size:.88rem;">👤 Profil</div>
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px;">
+          <div class="avatar" id="settings-avatar" style="width:52px;height:52px;font-size:1.1rem;flex-shrink:0;">?</div>
+          <div>
+            <div style="font-weight:600;" id="settings-fullname">—</div>
+            <div style="font-size:.78rem;color:var(--text2);" id="settings-username">—</div>
+            <div style="font-size:.78rem;color:var(--text2);" id="settings-email">—</div>
+          </div>
+        </div>
+        <div class="fr"><label>Ad Soyad</label><input type="text" id="edit-fullname" placeholder="Adınız Soyadınız"/></div>
+        <div class="fr"><label>Yeni Şifre <span style="font-weight:400;text-transform:none;color:var(--text2);">(boş = değiştirme)</span></label><input type="password" id="edit-password" placeholder="••••••••"/></div>
+        <button class="btn btn-primary btn-block" onclick="saveProfile()">Kaydet</button>
+      </div>
+
+    </div>
+  </main>
+
+  <nav class="bottom-nav">
+    <button class="nav-item active" onclick="switchPage('home',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>Ana Sayfa</span><div class="ndot"></div>
+    </button>
+    <button class="nav-item" onclick="switchPage('report',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      <span>Rapor</span><div class="ndot"></div>
+    </button>
+    <button class="nav-item" id="nav-admin" onclick="switchPage('admin',this)" style="display:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <span>Yönetim</span><div class="ndot"></div>
+    </button>
+    <button class="nav-item" onclick="switchPage('settings',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      <span>Ayarlar</span><div class="ndot"></div>
+    </button>
+  </nav>
+</div>
+
+<div id="toast"></div>
+
+<!-- COMP MODAL -->
+<div id="log-modal">
+  <div class="mo" onclick="closeModal('log-modal')">
+    <div class="modal" onclick="event.stopPropagation()">
+      <span class="mhandle"></span>
+      <div class="mtitle">◐ Telafi Okuması</div>
+      <div style="font-size:.8rem;color:var(--text2);margin-bottom:12px;">Bu haftaki okunmayan günler:</div>
+      <div id="comp-days-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:4px;"></div>
+      <div id="comp-empty" style="display:none;text-align:center;padding:24px;color:var(--text2);font-size:.85rem;">
+        🎉 Bu haftanın tüm günleri tamamlandı!
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADD USER MODAL -->
+<div id="add-user-modal">
+  <div class="mo" onclick="closeModal('add-user-modal')">
+    <div class="modal" onclick="event.stopPropagation()">
+      <span class="mhandle"></span><div class="mtitle">👤 Yeni Kullanıcı</div>
+      <div class="fr"><label>Ad Soyad</label><input type="text" id="new-user-fullname" placeholder="Ad Soyad"/></div>
+      <div class="fr"><label>E-posta</label><input type="email" id="new-user-email" placeholder="kullanici@email.com"/></div>
+      <div class="fr">
+        <label>Varsayılan Şifre</label>
+        <input type="text" id="new-user-password" value="risale2025"/>
+        <div style="font-size:.7rem;color:var(--text2);margin-top:4px;">Kullanıcı giriş sonrası ayarlar'dan değiştirebilir</div>
+      </div>
+      <div class="fr"><label>Grup</label><select id="new-user-group"><option value="">— Grup seçin (opsiyonel) —</option></select></div>
+      <div class="fr"><label>Rol</label><select id="new-user-role"><option value="user">Kullanıcı</option><option value="admin">Yönetici</option></select></div>
+      <button class="btn btn-primary btn-block" onclick="createUser()">Kullanıcı Oluştur</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD BOOK/GROUP MODAL -->
+<div id="add-book-modal">
+  <div class="mo" onclick="closeModal('add-book-modal')">
+    <div class="modal" onclick="event.stopPropagation()">
+      <span class="mhandle"></span><div class="mtitle">📚 Yeni Kitap & Grup</div>
+      <div class="fr"><label>Kitap Adı</label><input type="text" id="book-title" placeholder="Kitabın adı"/></div>
+      <div class="fr"><label>Yazar</label><input type="text" id="book-author" placeholder="Yazar adı"/></div>
+      <div class="fr"><label>Toplam Sayfa</label><input type="number" id="book-pages" placeholder="Örn: 320" min="1"/></div>
+      <div class="fr"><label>Grup Adı</label><input type="text" id="group-name-input" placeholder="Okuma grubu adı"/></div>
+      <div class="fr"><label>Günlük Sayfa Hedefi</label><input type="number" id="group-daily-goal" placeholder="Örn: 20" min="1" value="20"/></div>
+      <div class="fr"><label>Başlangıç Tarihi</label><input type="date" id="group-start-date"/></div>
+      <button class="btn btn-primary btn-block" onclick="createBookGroup()">Oluştur</button>
+    </div>
+  </div>
+</div>
+
+<!-- MANAGE GROUP MODAL -->
+<div id="manage-group-modal">
+  <div class="mo" onclick="closeModal('manage-group-modal')">
+    <div class="modal" onclick="event.stopPropagation()">
+      <span class="mhandle"></span><div class="mtitle">👥 Üye Ekle / Çıkar</div>
+      <div class="fr"><label>Grup</label><select id="manage-group-select" onchange="loadGroupMembersForManage()"></select></div>
+      <div class="fr">
+        <label>Kullanıcılar <span style="color:var(--text2);font-weight:400;text-transform:none;">(seçili = grupta)</span></label>
+        <div class="user-check-list" id="user-check-list"></div>
+      </div>
+      <button class="btn btn-primary btn-block" onclick="saveGroupMembers()">Kaydet</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE USER MODAL -->
+<div id="delete-user-modal">
+  <div class="mo" onclick="closeModal('delete-user-modal')">
+    <div class="modal" onclick="event.stopPropagation()">
+      <span class="mhandle"></span>
+      <div class="mtitle">🗑️ Kullanıcı Sil</div>
+      <div style="font-size:.82rem;color:var(--text2);margin-bottom:14px;">Silmek istediğiniz kullanıcıları seçin. Bu işlem geri alınamaz.</div>
+      <div class="fr">
+        <label>Kullanıcılar</label>
+        <div class="user-check-list" id="delete-user-check-list"></div>
+      </div>
+      <button class="btn btn-danger btn-block" onclick="deleteUser()">🗑️ Seçili Kullanıcıları Sil</button>
+    </div>
+  </div>
+</div>
+
+<!-- İLAVE MODAL -->
+<div id="ilave-modal">
+  <div class="mo" onclick="closeModal('ilave-modal')">
+    <div class="modal" onclick="event.stopPropagation()">
+      <span class="mhandle"></span>
+      <div class="mtitle">➕ İlave Okuma</div>
+      <div style="font-size:.8rem;color:var(--text2);margin-bottom:12px;">Okuma veya telafi girişi yapılan günler:</div>
+      <div id="ilave-days-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:4px;"></div>
+      <div id="ilave-empty" style="display:none;text-align:center;padding:24px;color:var(--text2);font-size:.85rem;">
+        📖 Son 7 günde okuma kaydı bulunamadı.
+      </div>
+    </div>
+  </div>
+</div>
+<!-- İLAVE SAYFA MODAL -->
+<div id="ilave-pages-modal">
+  <div class="mo" onclick="closeModal('ilave-pages-modal')">
+    <div class="modal" onclick="event.stopPropagation()">
+      <span class="mhandle"></span>
+      <div class="mtitle">➕ İlave Sayfa Gir</div>
+      <input type="hidden" id="ilave-selected-date"/>
+      <div style="background:var(--bg3);border-radius:var(--rs);padding:12px 14px;margin-bottom:14px;">
+        <div style="font-size:.78rem;color:var(--text2);margin-bottom:2px;">Seçilen Gün</div>
+        <div style="font-weight:600;" id="ilave-selected-label">—</div>
+      </div>
+      <div class="fr"><label>İlave Sayfa Sayısı</label><input type="number" id="ilave-pages" placeholder="Örn: 10" min="1"/></div>
+      <div class="fr"><label>Not (opsiyonel)</label><textarea id="ilave-note" placeholder="Not..."></textarea></div>
+      <button class="btn btn-ilave btn-block" onclick="submitIlaveLog()">➕ İlave Okumayı Kaydet</button>
+    </div>
+  </div>
+</div>
+
+<!-- ŞİFRE GÜNCELLEME MODAL (recovery flow) -->
+<div id="pw-update-modal">
+  <div class="mo" style="align-items:center;">
+    <div class="modal" onclick="event.stopPropagation()">
+      <span class="mhandle"></span>
+      <div class="mtitle">🔑 Yeni Şifre Belirle</div>
+      <div style="font-size:.82rem;color:var(--text2);margin-bottom:14px;">Şifre sıfırlama bağlantısından geldiniz. Yeni şifrenizi belirleyin.</div>
+      <div class="fr"><label>Yeni Şifre</label><input type="password" id="new-pw-input" placeholder="En az 6 karakter"/></div>
+      <div class="fr"><label>Şifre Tekrar</label><input type="password" id="new-pw-confirm" placeholder="Şifreyi tekrar girin"/></div>
+      <button class="btn btn-primary btn-block" onclick="doUpdatePassword()">Şifreyi Güncelle</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESET PASSWORD MODAL -->
+<div id="reset-pw-modal">
+  <div class="mo" onclick="closeModal('reset-pw-modal')">
+    <div class="modal" onclick="event.stopPropagation()">
+      <span class="mhandle"></span>
+      <div class="mtitle">🔑 Şifre Sıfırla</div>
+      <input type="hidden" id="reset-pw-uid"/>
+      <div style="background:var(--bg3);border-radius:var(--rs);padding:12px 14px;margin-bottom:14px;">
+        <div style="font-size:.78rem;color:var(--text2);margin-bottom:2px;">Kullanıcı</div>
+        <div style="font-weight:600;" id="reset-pw-name">—</div>
+      </div>
+      <div class="fr">
+        <label>Yeni Şifre</label>
+        <input type="text" id="reset-pw-input" placeholder="En az 6 karakter"/>
+        <div style="font-size:.7rem;color:var(--text2);margin-top:4px;">Kullanıcıya e-posta ile şifre sıfırlama bağlantısı gönderilecektir.</div>
+      </div>
+      <button class="btn btn-primary btn-block" onclick="doResetPassword()">🔑 Sıfırlama Maili Gönder</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT GROUP MODAL -->
+<div id="edit-group-modal">
+  <div class="mo" onclick="closeModal('edit-group-modal')">
+    <div class="modal" onclick="event.stopPropagation()">
+      <span class="mhandle"></span><div class="mtitle">✏️ Grubu Düzenle</div>
+      <input type="hidden" id="edit-group-id"/>
+      <div class="fr"><label>Grup Adı</label><input type="text" id="edit-group-name"/></div>
+      <div class="fr"><label>Günlük Sayfa Hedefi</label><input type="number" id="edit-group-goal" min="1"/></div>
+      <div class="fr"><label>Başlangıç Tarihi</label><input type="date" id="edit-group-start"/></div>
+      <button class="btn btn-primary btn-block" onclick="saveGroupEdit()">Güncelle</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+const sb = createClient('https://rrupsidrdgwgagetcojx.supabase.co','sb_publishable_lQXYDZqUPATZNwM8Cb17kg_F-T1XsOI');
+
+
+let me = null, myProfile = null, myGroup = null, allProfiles = [], allGroups = [], notifTimer = null;
+let homeWeekOffset = 0;
+let reportOffset = 0;
+
+const DN = ['Pzt','Sal','Çar','Per','Cum','Cmt','Paz'];
+const MN = ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
+const MNF = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+
+function todayStr(){
+  const d=new Date();
+  const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), dd=String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${dd}`;
+}
+async function loadUserData(currentGroup) {
+    try {
+        const currentUser = me || (await sb.auth.getUser()).data?.user;
+        if (!currentUser) return;
+
+        const targetGroup = currentGroup || myGroup;
+        
+        // 🔍 TEST LOGU: Konsola tam olarak ne geldiğini basıyoruz
+        console.log("=== KÖPRÜ VERİ KONTROLÜ ===");
+        console.log("Gelen Grup Nesnesi:", JSON.stringify(targetGroup));
+
+        if (targetGroup) {
+            const gId = targetGroup.id || targetGroup.group_id || "BULUNAMADI";
+            const gGoal = targetGroup.daily_page_goal || targetGroup.page_goal || 20;
+
+            if (typeof window.AndroidBridge !== 'undefined') {
+                // 🔥 GÜNCELLENDİ: Android katmanına email ve şifreyi de paketleyip gönderiyoruz
+                window.AndroidBridge.sendData(JSON.stringify({
+                    userId: currentUser.id,
+                    userEmail: currentUser.email, // 👈 Supabase kullanıcısının e-postası
+                    userPassword: typeof userPassword, // 👈 Web girişindeki şifre değişkeniniz
+                    groupId: String(gId),
+                    goalPages: parseInt(gGoal) || 20
+                }));
+            }
+        } else {
+            console.log("Hata: targetGroup tamamen null veya undefined!");
+        }
+    } catch (e) {
+        console.log('loadUserData hatası:', e);
+    }
+}
+function dateStr(d){
+  const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), dd=String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${dd}`;
+}
+function weekStart(d=new Date()){
+  const dt=new Date(d.getFullYear(),d.getMonth(),d.getDate());
+  const day=dt.getDay();
+  dt.setDate(dt.getDate()-(day===0?6:day-1));
+  return dt;
+}
+let _tt; function toast(msg,type=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='show'+(type?' '+type:'');
+  clearTimeout(_tt); _tt=setTimeout(()=>t.className='',3200);
+}
+function showScreen(name){
+  document.getElementById('app-loading').classList.add('hidden');
+  ['login-screen','main-app'].forEach(id=>document.getElementById(id).classList.remove('active'));
+  const m={login:'login-screen',app:'main-app'};
+  if(m[name]) document.getElementById(m[name]).classList.add('active');
+}
+function openM(id){ document.getElementById(id).classList.add('am'); }
+window.closeModal=function(id){ document.getElementById(id).classList.remove('am'); };
+
+// ── AUTH ──────────────────────────────────────────────────────
+async function boot(){
+  try{
+    // Önce recovery URL kontrolü
+    const isRecovery=await handleAuthCallback();
+    if(isRecovery) return;
+
+    const {data}=await sb.auth.getSession();
+    if(data?.session){ me=data.session.user; await loadProfile(); showScreen('app'); initApp(); }
+    else showScreen('login');
+  }catch(e){ console.error(e); showScreen('login'); }
+}
+window.forgotPassword=async function(){
+  const email=document.getElementById('login-email').value.trim();
+  if(!email){ toast('Önce e-posta adresinizi girin','error'); return; }
+  const {error}=await sb.auth.resetPasswordForEmail(email,{
+    redirectTo: window.location.href
+  });
+  if(error){ toast('Hata: '+error.message,'error'); return; }
+  toast('Şifre sıfırlama maili gönderildi! Gelen kutunuzu kontrol edin.','success');
+};
+
+window.doLogin=async function(){
+  const email=document.getElementById('login-email').value.trim();
+  const pw=document.getElementById('login-password').value;
+  const btn=document.getElementById('login-btn');
+  const err=document.getElementById('login-error');
+  err.style.display='none'; btn.disabled=true; btn.textContent='Giriş yapılıyor...';
+  const {data,error}=await sb.auth.signInWithPassword({email,password:pw});
+  if(error){err.style.display='block';btn.disabled=false;btn.textContent='Giriş Yap';return;}
+  me=data.user; await loadProfile(); showScreen('app'); initApp();
+};
+window.doLogout=async function(){
+  await sb.auth.signOut(); me=myProfile=myGroup=null; clearInterval(notifTimer); showScreen('login');
+};
+async function loadProfile(){
+  const {data}=await sb.from('profiles').select('*').eq('id',me.id).single();
+  myProfile=data;
+}
+
+// ── PROFILE DISPLAY ─────────────────────────────────────────
+function updateProfileDisplay(){
+  const name=myProfile?.full_name||myProfile?.username||'?';
+  const init=name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  document.getElementById('user-avatar').textContent=init;
+  const sa=document.getElementById('settings-avatar');
+  if(sa){ sa.textContent=init; }
+  document.getElementById('settings-fullname').textContent=myProfile?.full_name||'—';
+  document.getElementById('settings-username').textContent='@'+(myProfile?.username||'—');
+  document.getElementById('settings-email').textContent=me?.email||'—';
+  document.getElementById('edit-fullname').value=myProfile?.full_name||'';
+  const epEl=document.getElementById('edit-password'); if(epEl) epEl.value='';
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+async function initApp(){
+  const init=(myProfile?.full_name||myProfile?.username||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  document.getElementById('user-avatar').textContent=init;
+  updateProfileDisplay();
+  document.getElementById('header-user-name').textContent=myProfile?.full_name||myProfile?.username||'';
+  if(myProfile?.role==='admin'){ const nav=document.getElementById('nav-admin'); if(nav) nav.style.display='flex'; await loadAdminGroups(); await loadAdminAllMembers(); }
+  await loadMyGroup();
+  await loadHome(); await loadReport();
+  await loadNotifSettings(); scheduleNotif();
+  // Uygulama açılışında veriyi tazele
+  setInterval(loadHome, 5*60*1000); // 5 dakikada bir arka planda güncelle
+}
+
+window.saveProfile=async function(){
+  const fullname=document.getElementById('edit-fullname').value.trim();
+  const password=document.getElementById('edit-password').value;
+  if(!fullname) return toast('Ad Soyad gerekli','error');
+
+  // Ad Soyad güncelle
+  const {error:profErr}=await sb.from('profiles').update({full_name:fullname}).eq('id',me.id);
+  if(profErr){toast('Hata: '+profErr.message,'error');return;}
+
+
+  // Şifre değişikliği
+  if(password){
+    if(password.length<6){toast('Şifre en az 6 karakter olmalı','error');return;}
+    const {error:pwErr}=await sb.auth.updateUser({password});
+    if(pwErr){toast('Şifre hatası: '+pwErr.message,'error');return;}
+  }
+
+  myProfile={...myProfile,full_name:fullname};
+  updateProfileDisplay();
+  toast('Profil güncellendi! ✓','success');
+};
+
+window.sendPasswordReset=async function(){
+  const {error}=await sb.auth.resetPasswordForEmail(me.email,{
+    redirectTo: window.location.href
+  });
+  if(error){toast('Hata: '+error.message,'error');return;}
+  toast('Şifre sıfırlama maili gönderildi: '+me.email,'success');
+};
+
+async function loadMyGroup(){
+  try {
+    const {data}=await sb.from('group_members').select('group_id,reading_groups(*,books(*))').eq('user_id',me.id).limit(1).maybeSingle();
+    
+    if(data?.reading_groups){
+      myGroup = data.reading_groups;
+      document.getElementById('header-group-name').textContent = myGroup.name;
+      document.getElementById('header-group-label').textContent = myGroup.name;
+      
+      // 🔥 KRİTİK DÜZELTME: Grup verisi başarıyla geldiği an Android'i uyandırıyoruz!
+      loadUserData(myGroup);
+
+    } else {
+      document.getElementById('header-group-name').textContent = 'Grup yok';
+    }
+  } catch (err) {
+    console.log("Grup yükleme hatası:", err);
+  }
+}
+
+// ── HOME ──────────────────────────────────────────────────────
+window.changeHomeWeek=function(diff){
+  homeWeekOffset += diff;
+  loadHome();
+};
+
+async function loadHome(){
+  const now=new Date(), today=todayStr();
+  const baseDate = new Date();
+  baseDate.setDate(baseDate.getDate() + (homeWeekOffset * 7));
+
+
+  if(!myGroup){
+    document.getElementById('week-body').innerHTML='<tr><td colspan="8" style="padding:20px;text-align:center;color:var(--text2);font-size:.82rem;">Henüz bir gruba atanmadınız</td></tr>';
+    ['stat-week','stat-total','stat-delay'].forEach(id=>document.getElementById(id).textContent='—');
+    return;
+  }
+  const goal=myGroup.daily_page_goal;
+  // Son 7 gün (bugün dahil veya seçili hafta)
+  const we=new Date(baseDate.getFullYear(),baseDate.getMonth(),baseDate.getDate());
+  const ws=new Date(we.getFullYear(),we.getMonth(),we.getDate()-6);
+  const wsStr=dateStr(ws), weStr=dateStr(we);
+  document.getElementById('week-range').textContent=`${ws.getDate()} ${MNF[ws.getMonth()]} – ${we.getDate()} ${MNF[we.getMonth()]} ${we.getFullYear()}`;
+
+  // Tüm gruplardaki tüm üyeleri çek
+  const {data:allMembers}=await sb.from('group_members')
+    .select('user_id,group_id,profiles(*),reading_groups(id,name,daily_page_goal)');
+  if(!allMembers?.length) return;
+
+  // Kullanıcı başına tek kayıt tut (birden fazla grubu varsa ilkini al)
+  const userMap={};
+  allMembers.forEach(m=>{
+    if(!userMap[m.user_id]) userMap[m.user_id]={...m};
+  });
+  const members=Object.values(userMap);
+
+  // Tüm grup ID'leri
+  const groupIds=[...new Set(allMembers.map(m=>m.group_id))];
+  const mIds=members.map(m=>m.user_id);
+
+  // Bu haftanın loglarını tüm gruplardan çek
+  const {data:wLogs}=await sb.from('reading_logs').select('*')
+    .gte('log_date',wsStr).lte('log_date',weStr).in('user_id',mIds);
+
+  // Her kullanıcının kendi grubunun hedefini al
+  const userGoalMap={};
+  allMembers.forEach(m=>{ userGoalMap[m.user_id]=m.reading_groups?.daily_page_goal||goal; });
+
+  // logs map: userId -> dateStr -> log
+  const lMap={};
+  (wLogs||[]).forEach(l=>{ if(!lMap[l.user_id])lMap[l.user_id]={}; lMap[l.user_id][l.log_date]=l; });
+
+  // Header - son 7 gün, bugünden geriye
+  let hHtml='<th class="name-cell">Üye</th>';
+  for(let i=0;i<7;i++){
+    const d=new Date(ws.getFullYear(),ws.getMonth(),ws.getDate()+i);
+    const ds=dateStr(d);
+    const dayName=DN[(d.getDay()+6)%7];
+    hHtml+=`<th class="${ds===today?'today-col':''}">${dayName}<br><span style="font-size:.65rem;opacity:.7">${d.getDate()}</span></th>`;
+  }
+  document.getElementById('week-head').innerHTML=hHtml;
+
+  // Avatar color palette
+  const avatarColors=['#3fb950','#388bfd','#bc8cff','#c9a84c','#f85149','#58a6ff','#d29922','#7ee787'];
+  const memberColorMap={};
+  members.forEach((m,idx)=>{ memberColorMap[m.user_id]=avatarColors[idx%avatarColors.length]; });
+
+  // Sort: me first, then alphabetical
+  const sorted=members.slice().sort((a,b)=>a.user_id===me.id?-1:b.user_id===me.id?1:(a.profiles?.full_name||'').localeCompare(b.profiles?.full_name||''));
+
+  let bHtml='';
+  sorted.forEach(m=>{
+    const isMe=m.user_id===me.id;
+    const name=m.profiles?.full_name||m.profiles?.username||'?';
+    const avColor=memberColorMap[m.user_id]||'#388bfd';
+    const avInit=name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    const memberGoal=userGoalMap[m.user_id]||goal;
+    let row=`<tr class="${isMe?'me-row':''}"><td class="name-cell"><span class="row-avatar" style="background:${avColor}">${avInit}</span>${name}</td>`;
+    for(let i=0;i<7;i++){
+      const d=new Date(ws.getFullYear(),ws.getMonth(),ws.getDate()+i);
+      const ds=dateStr(d);
+      const future=ds>today;
+      const log=lMap[m.user_id]?.[ds];
+      let cls='dot-future',sym='';
+      if(!future){
+        if(log?.is_compensatory){cls='dot-yellow';sym='◐';}
+        else if(log&&log.pages_read>memberGoal){cls='dot-blue';sym='➕';}
+        else if(log&&log.pages_read>=memberGoal){cls='dot-green';sym='✓';}
+        else if(log&&log.pages_read>0){cls='dot-yellow';sym='~';}
+        else{cls='dot-red';sym='✗';}
+      }
+      row+=`<td class="${ds===today?'today-cell':''}"><div class="dot ${cls}">${sym}</div></td>`;
+    }
+    bHtml+=row+'</tr>';
+  });
+  document.getElementById('week-body').innerHTML=bHtml;
+
+ // My stats
+  const {data:myLogs}=await sb.from('reading_logs').select('*').eq('user_id',me.id).eq('group_id',myGroup.id).order('log_date',{ascending:false});
+  const myMap={}; (myLogs||[]).forEach(l=>myMap[l.log_date]=l);
+  
+  // İstatistik başlangıç tarihini belirle: Grubun başlangıcı mı yoksa kullanıcının eklenme tarihi mi?
+  // Hangisi daha sonraysa o tarihten itibaren hesapla.
+  const groupStart = new Date(myGroup.start_date);
+  const userJoin = new Date(myProfile.created_at);
+  const effectiveStart = userJoin > groupStart ? userJoin : groupStart;
+  effectiveStart.setHours(0,0,0,0);
+  
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const days = Math.max(0, Math.floor((todayStart - effectiveStart) / 86400000));
+  const totalGoal = (days + 1) * goal;
+  const totalRead=(myLogs||[]).reduce((s,l)=>s+l.pages_read,0);
+  const wkPages=(myLogs||[]).filter(l=>l.log_date>=wsStr&&l.log_date<=weStr).reduce((s,l)=>s+l.pages_read,0);
+  const diff=totalRead-totalGoal;
+  document.getElementById('stat-week').textContent=wkPages;
+  document.getElementById('stat-total').textContent=totalRead;
+  const de=document.getElementById('stat-delay'), dl=document.getElementById('stat-delay-label');
+  if(diff>=0){de.textContent='+'+diff;de.className='sv green';dl.textContent='sayfa';}
+  else{de.textContent=diff;de.className='sv red';dl.textContent='sayfa';}
+
+
+}
+
+
+// ── MEMBERS ───────────────────────────────────────────────────
+async function loadMembers(){
+  if(!myGroup){ document.getElementById('members-list').innerHTML='<div class="empty"><div class="eico">👥</div><p>Henüz bir gruba atanmadınız</p></div>'; return; }
+  const today=todayStr();
+  document.getElementById('members-subtitle').textContent=`${myGroup.name} — Bugün`;
+  const {data:members}=await sb.from('group_members').select('user_id,profiles(*)').eq('group_id',myGroup.id);
+  const {data:logs}=await sb.from('reading_logs').select('*').eq('group_id',myGroup.id).eq('log_date',today);
+  const lm={}; (logs||[]).forEach(l=>lm[l.user_id]=l);
+  const goal=myGroup.daily_page_goal;
+  const sorted=(members||[]).slice().sort((a,b)=>{
+    const s=l=>!l?0:l.is_compensatory?2:l.pages_read>=goal?3:1;
+    return s(lm[b.user_id])-s(lm[a.user_id]);
+  });
+  let html='';
+  sorted.forEach(m=>{
+    const log=lm[m.user_id], name=m.profiles?.full_name||m.profiles?.username||'?';
+    const ini=name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    let av='',bc='',bt='',meta='';
+    if(!log){av='';bc='b-none';bt='— Girmemiş';meta='Bugün kayıt yok';}
+    else if(log.is_compensatory){av='comp';bc='b-comp';bt='◐ Telafi';meta=`${log.pages_read} sayfa (telafi)`;}
+    else if(log.pages_read>=goal){av='ok';bc='b-ok';bt='✓ Zamanında';meta=`${log.pages_read} sayfa okundu`;}
+    else{av='late';bc='b-late';bt='✗ Gecikmeli';meta=`${log.pages_read}/${goal} sayfa`;}
+    html+=`<div class="mi"><div class="mav ${av}">${ini}</div><div class="minfo"><div class="mname">${name}${m.profiles?.role==='admin'?'<span class="atag">ADMİN</span>':''}</div><div class="mmeta">${meta}</div></div><span class="badge ${bc}">${bt}</span></div>`;
+  });
+  document.getElementById('members-list').innerHTML=html||'<div class="empty"><p>Üye yok</p></div>';
+}
+
+// ── REPORT ────────────────────────────────────────────────────
+window.changeReportOffset=function(diff){
+  reportOffset += diff;
+  loadReport();
+};
+
+async function loadReport(){
+  const now=new Date(), today=todayStr();
+
+  // Son 30 günü hesapla (offset ile)
+  const mEnd=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  mEnd.setDate(mEnd.getDate() + (reportOffset * 30));
+  const mStart=new Date(mEnd); mStart.setDate(mStart.getDate()-29);
+  const mStartStr=dateStr(mStart), mEndStr=dateStr(mEnd);
+
+  // Son 7 gün (sıralama için)
+  const we=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  const ws=new Date(we.getFullYear(),we.getMonth(),we.getDate()-6);
+  const wsStr=dateStr(ws), weStr=dateStr(we);
+  const fmt=d=>`${d.getDate()} ${MNF[d.getMonth()]}`;
+  document.getElementById('report-week-label').textContent=`${fmt(mStart)} – ${fmt(mEnd)} ${mEnd.getFullYear()}`;
+
+  if(!myGroup){
+    document.getElementById('my-weekly-report').innerHTML='<p style="color:var(--text2);font-size:.82rem;">Grup bulunamadı</p>';
+    return;
+  }
+  const goal=myGroup.daily_page_goal;
+
+  // Son 30 günün loglarını çek
+  const {data:myLogs}=await sb.from('reading_logs').select('*')
+    .eq('user_id',me.id).eq('group_id',myGroup.id)
+    .gte('log_date',mStartStr).lte('log_date',mEndStr)
+    .order('log_date',{ascending:true});
+  const lm={}; (myLogs||[]).forEach(l=>lm[l.log_date]=l);
+
+  // İstatistikler
+  let totalPages=0, daysOk=0, daysComp=0, daysIlave=0, daysMiss=0;
+  for(let i=0;i<30;i++){
+    const d=new Date(mStart.getFullYear(),mStart.getMonth(),mStart.getDate()+i);
+    const ds=dateStr(d);
+    if(ds>today) break;
+    const log=lm[ds];
+    if(!log){daysMiss++;}
+    else if(log.is_compensatory){daysComp++;totalPages+=log.pages_read;}
+    else if(log.pages_read>goal){daysIlave++;daysOk++;totalPages+=log.pages_read;}
+    else if(log.pages_read>=goal){daysOk++;totalPages+=log.pages_read;}
+    else{daysMiss++;totalPages+=log.pages_read;}
+  }
+
+  // Özet kartlar
+  const summaryHtml=`<div class="stat-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:14px;">
+    <div class="stat-card"><div class="sl">Toplam</div><div class="sv" style="font-size:1.1rem;">${totalPages}</div><div class="ssub">sayfa</div></div>
+    <div class="stat-card"><div class="sl" style="color:#00c462;">Tamam</div><div class="sv" style="font-size:1.1rem;color:#00c462;">${daysOk}</div><div class="ssub">gün</div></div>
+    <div class="stat-card"><div class="sl" style="color:#e09400;">Telafi</div><div class="sv" style="font-size:1.1rem;color:#e09400;">${daysComp}</div><div class="ssub">gün</div></div>
+    <div class="stat-card"><div class="sl" style="color:var(--red);">Eksik</div><div class="sv" style="font-size:1.1rem;color:var(--red);">${daysMiss}</div><div class="ssub">gün</div></div>
+  </div>`;
+
+  // Takvim: 30 günlük, Pazartesi başlangıçlı 7 sütun grid
+  // İlk günün haftanın kaçıncı günü olduğunu bul (0=Pzt)
+  const firstDow=(mStart.getDay()+6)%7;
+  // Takvim başlangıcı: mStart'ın haftasının Pazartesi'si
+  const calStart=new Date(mStart.getFullYear(),mStart.getMonth(),mStart.getDate()-firstDow);
+
+  // Kaç satır gerekli?
+  const lastDay=new Date(mEnd.getFullYear(),mEnd.getMonth(),mEnd.getDate());
+  const lastDow=(lastDay.getDay()+6)%7;
+  const calEnd=new Date(lastDay.getFullYear(),lastDay.getMonth(),lastDay.getDate()+(6-lastDow));
+  const totalCells=Math.round((calEnd-calStart)/86400000)+1;
+
+  // Gün başlıkları
+  let calHtml=`<div class="cal-header">`;
+  ['Pzt','Sal','Çar','Per','Cum','Cmt','Paz'].forEach(d=>{
+    calHtml+=`<div class="cal-head-cell">${d}</div>`;
+  });
+  calHtml+=`</div><div class="cal-grid">`;
+
+  for(let i=0;i<totalCells;i++){
+    const d=new Date(calStart.getFullYear(),calStart.getMonth(),calStart.getDate()+i);
+    const ds=dateStr(d);
+    const inRange=ds>=mStartStr&&ds<=mEndStr;
+    const isToday=ds===today;
+    const isFuture=ds>today;
+
+    if(!inRange){
+      calHtml+=`<div class="cal-cell cc-empty"></div>`;
+      continue;
+    }
+
+    const log=lm[ds];
+    const pages=log?.pages_read||0;
+    let cls='cc-fut', pagesLabel='';
+
+    if(!isFuture){
+      if(!log||pages===0){ cls='cc-miss'; }
+      else if(log.is_compensatory){ cls='cc-comp'; pagesLabel=pages+'s'; }
+      else if(pages>goal){ cls='cc-ilave'; pagesLabel=pages+'s'; }
+      else if(pages>=goal){ cls='cc-ok'; pagesLabel=pages+'s'; }
+      else{ cls='cc-miss'; pagesLabel=pages+'s'; }
+    }
+
+    calHtml+=`<div class="cal-cell ${cls}${isToday?' today-cal':''}">
+      <span class="cc-date">${d.getDate()}</span>
+      ${pagesLabel?`<span class="cc-pages">${pagesLabel}</span>`:''}
+    </div>`;
+  }
+  calHtml+=`</div>`;
+
+  // Renk açıklaması
+  const legendHtml=`<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;">
+    <span style="display:flex;align-items:center;gap:4px;font-size:.7rem;color:var(--text2);"><span style="width:10px;height:10px;border-radius:3px;background:#00c462;display:inline-block;"></span>Zamanında</span>
+    <span style="display:flex;align-items:center;gap:4px;font-size:.7rem;color:var(--text2);"><span style="width:10px;height:10px;border-radius:3px;background:#2563eb;display:inline-block;"></span>İlave</span>
+    <span style="display:flex;align-items:center;gap:4px;font-size:.7rem;color:var(--text2);"><span style="width:10px;height:10px;border-radius:3px;background:#e09400;display:inline-block;"></span>Telafi</span>
+    <span style="display:flex;align-items:center;gap:4px;font-size:.7rem;color:var(--text2);"><span style="width:10px;height:10px;border-radius:3px;background:rgba(255,60,60,.35);display:inline-block;"></span>Eksik</span>
+  </div>`;
+
+  document.getElementById('my-weekly-report').innerHTML=summaryHtml+calHtml+legendHtml;
+
+  // Son 7 gün sıralaması - tüm gruplardan
+  const {data:allGM}=await sb.from('group_members').select('user_id,profiles(*),reading_groups(daily_page_goal)');
+  const {data:gLogs}=await sb.from('reading_logs').select('user_id,pages_read').gte('log_date',wsStr).lte('log_date',weStr);
+  const uwp={}; (gLogs||[]).forEach(l=>uwp[l.user_id]=(uwp[l.user_id]||0)+l.pages_read);
+  // Kullanıcı başına tek kayıt
+  const userMapR={};
+  (allGM||[]).forEach(m=>{ if(!userMapR[m.user_id]) userMapR[m.user_id]=m; });
+  const allUsers=Object.values(userMapR);
+  const sorted=allUsers.slice().sort((a,b)=>(uwp[b.user_id]||0)-(uwp[a.user_id]||0));
+  const maxP=Math.max(...sorted.map(m=>uwp[m.user_id]||0),1);
+  let gh='';
+  sorted.forEach((m,i)=>{
+    const p=uwp[m.user_id]||0, pct=Math.round(p/maxP*100);
+    const name=m.profiles?.full_name||m.profiles?.username||'?', isMe=m.user_id===me.id;
+    const mGoal=m.reading_groups?.daily_page_goal||goal;
+    const s7Goal=mGoal*7;
+    gh+=`<div class="rb-wrap"><div class="rb-label"><span>${i+1}. ${name}${isMe?' <span style="color:var(--accent)">(Sen)</span>':''}</span><span>${p}/${s7Goal} s.</span></div><div class="rb"><div class="rbf" style="width:${pct}%;${p>=s7Goal?'':'background:var(--blue);'}"></div></div></div>`;
+  });
+  document.getElementById('group-weekly-report').innerHTML=gh||'<div class="empty"><p>Veri yok</p></div>';
+}
+
+// ── LOG ACTIONS ───────────────────────────────────────────────
+window.openIlaveModal=async function(){
+  if(!myGroup) return toast('Aktif grup bulunamadı','error');
+  const now=new Date(), today=todayStr();
+  const goal=myGroup.daily_page_goal;
+
+  // Son 7 gün (bugün dahil)
+  const days=[];
+  for(let i=0;i<7;i++){
+    const d=new Date(now.getFullYear(),now.getMonth(),now.getDate()-i);
+    days.push({d, ds:dateStr(d)});
+  }
+
+  const startDs=dateStr(days[days.length-1].d);
+  const {data:logs}=await sb.from('reading_logs').select('log_date,pages_read,is_compensatory')
+    .eq('user_id',me.id).eq('group_id',myGroup.id)
+    .gte('log_date',startDs).lte('log_date',today);
+
+  const logMap={};
+  (logs||[]).forEach(l=>{ logMap[l.log_date]=l; });
+
+  // Sadece okuma veya telafi girilmiş günleri göster (hedef sayfa girilmiş)
+  const validDays=days.filter(({ds})=>logMap[ds] && logMap[ds].pages_read>=goal);
+
+  const listEl=document.getElementById('ilave-days-list');
+  const emptyEl=document.getElementById('ilave-empty');
+
+  if(!validDays.length){
+    listEl.innerHTML='';
+    emptyEl.style.display='block';
+    listEl.style.display='none';
+  } else {
+    emptyEl.style.display='none';
+    listEl.style.display='flex';
+    listEl.innerHTML=validDays.map(({d,ds})=>{
+      const log=logMap[ds];
+      const dayName=DN[(d.getDay()+6)%7];
+      const dateLabel=`${dayName}, ${d.getDate()} ${MN[d.getMonth()]}`;
+      const isComp=log.is_compensatory;
+      const isToday=ds===today;
+      const dotColor=isComp?'#e09400':'#00c462';
+      const logLabel=`${log.pages_read} s. · ${isComp?'Telafi':'Okuma'}`;
+      return `<button class="comp-day-btn" onclick="openIlavePagesModal('${ds}','${dateLabel}')" style="
+        display:flex;align-items:center;justify-content:space-between;
+        background:var(--bg3);border:1px solid var(--border);border-radius:var(--rs);
+        padding:13px 15px;cursor:pointer;width:100%;color:var(--text);
+        font-family:var(--fb);font-size:.88rem;transition:all .2s;
+      ">
+        <span style="display:flex;align-items:center;gap:10px;">
+          <span style="width:8px;height:8px;border-radius:50%;background:${dotColor};display:inline-block;flex-shrink:0;"></span>
+          <span>${dateLabel}${isToday?' <span style="color:var(--accent);font-size:.72rem;">(bugün)</span>':''}</span>
+        </span>
+        <span style="font-size:.78rem;color:var(--text2);">${logLabel} · ➕</span>
+      </button>`;
+    }).join('');
+  }
+  openM('ilave-modal');
+};
+
+window.openIlavePagesModal=function(date, label){
+  closeModal('ilave-modal');
+  document.getElementById('ilave-selected-date').value=date;
+  document.getElementById('ilave-selected-label').textContent=label;
+  document.getElementById('ilave-pages').value='';
+  document.getElementById('ilave-note').value='';
+  openM('ilave-pages-modal');
+};
+
+window.submitIlaveLog=async function(){
+  const date=document.getElementById('ilave-selected-date').value;
+  const pages=parseInt(document.getElementById('ilave-pages').value);
+  const note=document.getElementById('ilave-note').value.trim();
+  if(!date) return toast('Tarih seçin','error');
+  if(!pages||pages<1) return toast('Sayfa sayısı girin','error');
+
+  const {data:ex}=await sb.from('reading_logs').select('id,pages_read').eq('user_id',me.id).eq('group_id',myGroup.id).eq('log_date',date).maybeSingle();
+  let error;
+  if(ex){
+    const {error:e}=await sb.from('reading_logs').update({pages_read:ex.pages_read+pages,note:note||null}).eq('id',ex.id);
+    error=e;
+  } else {
+    const {error:e}=await sb.from('reading_logs').insert({user_id:me.id,group_id:myGroup.id,log_date:date,pages_read:pages,note:note||null,is_compensatory:false});
+    error=e;
+  }
+  if(error){toast('Kayıt hatası: '+error.message,'error');return;}
+  closeModal('ilave-pages-modal');
+  toast(`+${pages} sayfa ilave kaydedildi! ➕`,'success');
+  await loadHome();
+};
+window.logToday=async function(){
+  if(!myGroup) return toast('Aktif grup bulunamadı','error');
+  const today=todayStr();
+
+  // Bugün kayıt var mı kontrol et
+  const {data:ex}=await sb.from('reading_logs').select('id,pages_read,is_compensatory')
+    .eq('user_id',me.id).eq('group_id',myGroup.id).eq('log_date',today).maybeSingle();
+
+  if(ex){
+    // Daha önce girilmiş — onay iste
+    const tip=ex.is_compensatory?'telafi':'zamanında';
+    const confirmed=confirm(
+      `Bugün zaten ${ex.pages_read} sayfa (${tip}) kaydedilmiş.\n\nÜzerine yazmak istiyor musunuz?`
+    );
+    if(!confirmed) return;
+  }
+
+  await saveLog(today, myGroup.daily_page_goal, '', false);
+};
+window.openCompModal=async function(){
+  if(!myGroup) return toast('Aktif grup bulunamadı','error');
+  const now=new Date(), today=todayStr();
+  const goal=myGroup.daily_page_goal;
+
+  // Son 7 gün (bugün dahil)
+  const pastDays=[];
+  for(let i=0;i<7;i++){
+    const d=new Date(now.getFullYear(),now.getMonth(),now.getDate()-i);
+    pastDays.push({d, ds:dateStr(d)});
+  }
+
+  // Bu günlerin loglarını çek
+  const startDs=dateStr(pastDays[pastDays.length-1].d);
+  const {data:logs}=await sb.from('reading_logs').select('log_date,pages_read,is_compensatory')
+    .eq('user_id',me.id).eq('group_id',myGroup.id)
+    .gte('log_date',startDs).lte('log_date',today);
+
+  const loggedDays=new Set((logs||[]).filter(l=>l.pages_read>=goal).map(l=>l.log_date));
+
+  // Hedef sayıya ulaşılmamış günleri göster
+  const missingDays=pastDays.filter(({ds})=>!loggedDays.has(ds));
+
+  const listEl=document.getElementById('comp-days-list');
+  const emptyEl=document.getElementById('comp-empty');
+
+  if(!missingDays.length){
+    listEl.innerHTML='';
+    emptyEl.style.display='block';
+    listEl.style.display='none';
+  } else {
+    emptyEl.style.display='none';
+    listEl.style.display='flex';
+    listEl.innerHTML=missingDays.map(({d,ds})=>{
+      const dayName=DN[(d.getDay()+6)%7];
+      const dateLabel=`${dayName}, ${d.getDate()} ${MN[d.getMonth()]}`;
+      const isToday=ds===today;
+      return `<button class="comp-day-btn" onclick="submitCompLog('${ds}')" style="
+        display:flex;align-items:center;justify-content:space-between;
+        background:var(--bg3);border:1px solid var(--border);border-radius:var(--rs);
+        padding:13px 15px;cursor:pointer;width:100%;color:var(--text);
+        font-family:var(--fb);font-size:.88rem;transition:all .2s;
+      ">
+        <span style="display:flex;align-items:center;gap:10px;">
+          <span style="width:8px;height:8px;border-radius:50%;background:var(--red);display:inline-block;flex-shrink:0;"></span>
+          <span>${dateLabel}${isToday?' <span style="color:var(--accent);font-size:.72rem;">(bugün)</span>':''}</span>
+        </span>
+        <span style="font-size:.78rem;color:var(--text2);">${goal} sayfa · ◐</span>
+      </button>`;
+    }).join('');
+  }
+  openM('log-modal');
+};
+
+window.submitCompLog=async function(date){
+  if(!date) return;
+  closeModal('log-modal');
+  await saveLog(date,myGroup.daily_page_goal,'',true);
+};
+async function saveLog(date,pages,note,isComp){
+  const {data:ex}=await sb.from('reading_logs').select('id').eq('user_id',me.id).eq('group_id',myGroup.id).eq('log_date',date).maybeSingle();
+  const payload={pages_read:pages,note:note||null,is_compensatory:isComp};
+  let error;
+  if(ex){const{error:e}=await sb.from('reading_logs').update(payload).eq('id',ex.id);error=e;}
+  else{const{error:e}=await sb.from('reading_logs').insert({user_id:me.id,group_id:myGroup.id,log_date:date,...payload});error=e;}
+  if(error){toast('Kayıt hatası: '+error.message,'error');return;}
+  closeModal('log-modal');
+  toast(isComp?'Telafi kaydedildi! ◐':'Okuma kaydedildi! ✓','success');
+  await loadHome();
+}
+
+// ── ADMIN: GROUPS ─────────────────────────────────────────────
+async function loadAdminAllMembers(){
+  const el=document.getElementById('admin-all-members');
+  if(!el) return;
+
+  // Tüm grupları ve üyeleri çek
+  const {data:groups}=await sb.from('reading_groups').select('id,name,daily_page_goal,start_date,books(title)').order('name');
+  if(!groups?.length){ el.innerHTML='<div style="font-size:.82rem;color:var(--text2);text-align:center;padding:16px;">Henüz grup yok</div>'; return; }
+
+  const {data:members}=await sb.from('group_members').select('group_id,user_id,profiles(id,full_name,username,role,email)');
+  const {data:allLogs}=await sb.from('reading_logs').select('user_id,group_id,pages_read');
+
+  // Toplam sayfa per user per group
+  const pageMap={};
+  (allLogs||[]).forEach(l=>{
+    const k=l.user_id+'_'+l.group_id;
+    pageMap[k]=(pageMap[k]||0)+l.pages_read;
+  });
+
+  // Group members map
+  const groupMap={};
+  (members||[]).forEach(m=>{
+    if(!groupMap[m.group_id]) groupMap[m.group_id]=[];
+    groupMap[m.group_id].push(m);
+  });
+
+  let html='';
+  groups.forEach(g=>{
+    const mems=groupMap[g.id]||[];
+    html+=`<div class="card" style="margin-bottom:10px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div>
+          <div style="font-weight:700;font-size:.9rem;">${g.name}</div>
+          <div style="font-size:.72rem;color:var(--text2);">${g.books?.title||'—'} · ${g.daily_page_goal} sayfa/gün</div>
+        </div>
+        <span style="font-size:.72rem;color:var(--text2);background:var(--bg3);padding:3px 8px;border-radius:8px;">${mems.length} üye</span>
+      </div>`;
+    if(!mems.length){
+      html+='<div style="font-size:.8rem;color:var(--text2);padding:8px 0;">Üye yok</div>';
+    } else {
+      mems.forEach(m=>{
+        const name=m.profiles?.full_name||m.profiles?.username||'?';
+        const init=name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+        const pages=pageMap[m.user_id+'_'+g.id]||0;
+        const colors=['#3fb950','#388bfd','#bc8cff','#c9a84c','#f85149','#58a6ff'];
+        const col=colors[name.charCodeAt(0)%colors.length];
+        const uid=m.user_id;
+        const currentRole=m.profiles?.role||'user';
+        html+=`<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);">
+          <div style="width:30px;height:30px;border-radius:50%;background:${col};display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;color:#fff;flex-shrink:0;">${init}</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${name}</div>
+            <div style="font-size:.68rem;color:var(--text2);">${pages} sayfa · ${currentRole==='admin'?'<span style=color:var(--accent)>Yönetici</span>':'Kullanıcı'}</div>
+          </div>
+          <div style="display:flex;gap:4px;flex-shrink:0;">
+
+          </div>
+        </div>`;
+      });
+    }
+    html+='</div>';
+  });
+  el.innerHTML=html;
+}
+
+async function loadAdminGroups(){
+  const {data}=await sb.from('reading_groups').select('*,books(title)').order('created_at',{ascending:false});
+  allGroups=data||[];
+  const el=document.getElementById('admin-groups-list');
+  if(!allGroups.length){el.innerHTML='<div style="font-size:.82rem;color:var(--text2);">Henüz grup yok</div>';return;}
+  el.innerHTML=allGroups.map(g=>`<div class="group-item">
+    <div style="flex:1;min-width:0;"><div class="group-name">${g.name}</div><div class="group-meta">${g.books?.title||'—'} · ${g.daily_page_goal} s/gün</div></div>
+    <div style="display:flex;gap:5px;">
+      <button class="btn btn-secondary btn-sm" onclick="openEditGroup('${g.id}')">✏️</button>
+      <button class="btn btn-danger btn-sm" onclick="deleteGroup('${g.id}','${g.name.replace(/'/g,'')}')">🗑️</button>
+    </div>
+  </div>`).join('');
+}
+// Rol değiştir
+window.toggleRole=async function(uid, currentRole){
+  const newRole=currentRole==='admin'?'user':'admin';
+  const label=newRole==='admin'?'Yönetici':'Kullanıcı';
+  if(!confirm(`Bu kullanıcıyı "${label}" yapmak istiyor musunuz?`)) return;
+  const {error}=await sb.from('profiles').update({role:newRole}).eq('id',uid);
+  if(error){toast('Hata: '+error.message,'error');return;}
+  toast(`Rol "${label}" olarak güncellendi ✓`,'success');
+  await loadAdminAllMembers();
+};
+
+// Şifre sıfırla - admin yeni şifre belirler
+window.resetPassword=async function(uid, name){
+  const newPw=prompt(`"${name}" için yeni şifre girin:\n(En az 6 karakter)`);
+  if(newPw===null) return;
+  if(!newPw||newPw.trim().length<6){toast('Şifre en az 6 karakter olmalı','error');return;}
+
+  // Admin oturumunu sakla
+  const {data:{session:adminSess}}=await sb.auth.getSession();
+  if(!adminSess){toast('Oturum bulunamadı','error');return;}
+
+  // Kullanıcının emailini al
+  const {data:prof}=await sb.from('profiles').select('email').eq('id',uid).maybeSingle();
+  if(!prof?.email){toast('E-posta bulunamadı','error');return;}
+
+  // O kullanıcı olarak giriş yap ve şifre değiştir
+  const {data:signInData,error:signInErr}=await sb.auth.signInWithPassword({
+    email:prof.email, password:'risale2025'
+  });
+
+  if(signInErr){
+    // Direkt giriş yapılamadı - mail yolla
+    const {error:mailErr}=await sb.auth.resetPasswordForEmail(prof.email,{
+      redirectTo:window.location.href
+    });
+    if(mailErr){toast('Hata: '+mailErr.message,'error');return;}
+    // Admin oturumuna geri dön
+    await sb.auth.setSession({access_token:adminSess.access_token,refresh_token:adminSess.refresh_token});
+    toast(`${prof.email} adresine sıfırlama maili gönderildi`,'success');
+    return;
+  }
+
+  // Şifreyi güncelle
+  const {error:pwErr}=await sb.auth.updateUser({password:newPw.trim()});
+  
+  // Admin oturumuna geri dön
+  await sb.auth.setSession({access_token:adminSess.access_token,refresh_token:adminSess.refresh_token});
+  
+  if(pwErr){toast('Şifre güncellenemedi: '+pwErr.message,'error');return;}
+  toast(`"${name}" şifresi güncellendi ✓`,'success');
+};
+
+window.openDeleteUserModal=async function(){
+  const {data:profiles}=await sb.from('profiles').select('id,full_name,username').order('full_name');
+  const list=document.getElementById('delete-user-check-list');
+  // Kendi hesabını gösterme
+  list.innerHTML=(profiles||[]).filter(p=>p.id!==me.id).map(p=>`<div class="ucl-item"><input type="checkbox" id="duc-${p.id}" value="${p.id}"/><label for="duc-${p.id}">${p.full_name||p.username}</label></div>`).join('');
+  openM('delete-user-modal');
+};
+window.deleteUser=async function(){
+  const boxes=document.querySelectorAll('#delete-user-check-list input[type=checkbox]');
+  const selIds=[...boxes].filter(c=>c.checked).map(c=>c.value);
+  if(!selIds.length) return toast('En az bir kullanıcı seçin','error');
+  if(!confirm(`${selIds.length} kullanıcıyı ve tüm okuma kayıtlarını silmek istiyor musunuz?`)) return;
+
+  const btn=document.querySelector('#delete-user-modal .btn-danger');
+  btn.disabled=true; btn.textContent='Siliniyor...';
+
+  let successCount = 0;
+  for(const uid of selIds){
+    try {
+      // Tüm ilişkili verileri sil
+      await sb.from('reading_logs').delete().eq('user_id',uid);
+      await sb.from('group_members').delete().eq('user_id',uid);
+      await sb.from('notification_settings').delete().eq('user_id',uid);
+      const {error:profErr}=await sb.from('profiles').delete().eq('id',uid);
+      if(!profErr) successCount++;
+    } catch(e) { console.error('Delete error for '+uid, e); }
+  }
+
+  btn.disabled=false; btn.textContent='🗑️ Seçili Kullanıcıları Sil';
+  closeModal('delete-user-modal');
+  toast(`${successCount} kullanıcı ve tüm kayıtları silindi. Auth kayıtları için Dashboard kullanın.`,'success');
+
+  // Kullanıcı listesini güncelle
+  if(myProfile?.role==='admin') await loadAdminAllMembers();
+};
+window.deleteGroup=async function(gid,gname){
+  if(!confirm(`"${gname}" grubunu silmek istediğinize emin misiniz?\nTüm okuma kayıtları silinecek!`)) return;
+  await sb.from('reading_logs').delete().eq('group_id',gid);
+  await sb.from('group_members').delete().eq('group_id',gid);
+  const {error}=await sb.from('reading_groups').delete().eq('id',gid);
+  if(error){toast('Silme hatası: '+error.message,'error');return;}
+  toast('Grup silindi','success');
+  await loadAdminGroups(); await loadMyGroup(); await loadHome();
+};
+window.openEditGroup=function(gid){
+  const g=allGroups.find(x=>x.id===gid); if(!g) return;
+  document.getElementById('edit-group-id').value=g.id;
+  document.getElementById('edit-group-name').value=g.name;
+  document.getElementById('edit-group-goal').value=g.daily_page_goal;
+  document.getElementById('edit-group-start').value=g.start_date;
+  openM('edit-group-modal');
+};
+window.saveGroupEdit=async function(){
+  const id=document.getElementById('edit-group-id').value;
+  const name=document.getElementById('edit-group-name').value.trim();
+  const goal=parseInt(document.getElementById('edit-group-goal').value);
+  const start=document.getElementById('edit-group-start').value;
+  if(!name||!goal||!start) return toast('Tüm alanları doldurun','error');
+  const {error}=await sb.from('reading_groups').update({name,daily_page_goal:goal,start_date:start}).eq('id',id);
+  if(error){toast('Hata: '+error.message,'error');return;}
+  closeModal('edit-group-modal'); toast('Grup güncellendi!','success');
+  await loadAdminGroups(); await loadMyGroup(); await loadHome();
+};
+
+// ── ADMIN: CREATE USER ────────────────────────────────────────
+window.openAddUserModal=async function(){
+  document.getElementById('new-user-fullname').value='';
+  document.getElementById('new-user-email').value='';
+  document.getElementById('new-user-password').value='risale2025';
+  // Grup listesini doldur
+  const {data:groups}=await sb.from('reading_groups').select('id,name').order('name');
+  const gSel=document.getElementById('new-user-group');
+  gSel.innerHTML='<option value="">— Grup seçin (opsiyonel) —</option>';
+  (groups||[]).forEach(g=>{ gSel.innerHTML+=`<option value="${g.id}">${g.name}</option>`; });
+  openM('add-user-modal');
+};
+window.createUser=async function(){
+  const email=document.getElementById('new-user-email').value.trim();
+  const fullname=document.getElementById('new-user-fullname').value.trim();
+  const password=document.getElementById('new-user-password').value.trim();
+  const role=document.getElementById('new-user-role').value;
+  const groupId=document.getElementById('new-user-group').value;
+  const username=email.split('@')[0];
+  if(!email||!fullname) return toast('Ad Soyad ve e-posta gerekli','error');
+  if(!password||password.length<6) return toast('Şifre en az 6 karakter olmalı','error');
+
+  // Mevcut admin oturumunu sakla
+  const {data:{session:adminSession}}=await sb.auth.getSession();
+
+  // Yeni kullanıcı oluştur
+  const {data,error}=await sb.auth.signUp({email,password,options:{data:{username,full_name:fullname}}});
+  if(error){toast('Hata: '+error.message,'error');return;}
+  if(!data.user){toast('Kullanıcı oluşturulamadı','error');return;}
+  const newUserId=data.user.id;
+
+  // Admin oturumunu geri yükle
+  if(adminSession){
+    await sb.auth.setSession({
+      access_token:adminSession.access_token,
+      refresh_token:adminSession.refresh_token
+    });
+  }
+
+  // Profil güncelle
+  await new Promise(r=>setTimeout(r,800));
+  await sb.from('profiles').update({role,full_name:fullname,username,email}).eq('id',newUserId);
+
+  // Gruba ekle
+  if(groupId){
+    // Diğer gruplardan çıkar (tek grup kuralı)
+    await sb.from('group_members').delete().eq('user_id',newUserId).neq('group_id',groupId);
+    await sb.from('group_members').upsert({group_id:groupId,user_id:newUserId},{onConflict:'group_id,user_id'});
+  }
+
+  closeModal('add-user-modal');
+  toast(`${fullname} oluşturuldu${groupId?' ve gruba eklendi':''} ✓`,'success');
+  if(myProfile?.role==='admin'){ await loadAdminGroups(); await loadAdminAllMembers(); }
+};
+
+// ── ADMIN: CREATE BOOK/GROUP ──────────────────────────────────
+window.openAddBookModal=function(){ document.getElementById('group-start-date').value=todayStr(); openM('add-book-modal'); };
+window.createBookGroup=async function(){
+  const title=document.getElementById('book-title').value.trim();
+  const author=document.getElementById('book-author').value.trim();
+  const pages=parseInt(document.getElementById('book-pages').value);
+  const gName=document.getElementById('group-name-input').value.trim();
+  const dailyGoal=parseInt(document.getElementById('group-daily-goal').value);
+  const startDate=document.getElementById('group-start-date').value;
+  if(!title||!pages||!gName||!dailyGoal||!startDate) return toast('Tüm zorunlu alanları doldurun','error');
+  const {data:book,error:bErr}=await sb.from('books').insert({title,author:author||null,total_pages:pages,created_by:me.id}).select().single();
+  if(bErr){toast('Kitap hatası: '+bErr.message,'error');return;}
+  const {error:gErr}=await sb.from('reading_groups').insert({name:gName,book_id:book.id,daily_page_goal:dailyGoal,start_date:startDate,created_by:me.id});
+  if(gErr){toast('Grup hatası: '+gErr.message,'error');return;}
+  closeModal('add-book-modal'); toast('Kitap ve grup oluşturuldu!','success');
+  await loadAdminGroups(); await loadMyGroup();
+};
+
+// ── ADMIN: MANAGE MEMBERS ─────────────────────────────────────
+window.openManageGroupModal=async function(){
+  const {data:groups,error:gErr}=await sb.from('reading_groups').select('id,name').order('created_at',{ascending:false});
+  if(gErr){toast('Gruplar yüklenemedi: '+gErr.message,'error');return;}
+  const gSel=document.getElementById('manage-group-select');
+  gSel.innerHTML=(groups||[]).map(g=>`<option value="${g.id}">${g.name}</option>`).join('');
+  const {data:profiles}=await sb.from('profiles').select('id,username,full_name').order('full_name');
+  allProfiles=profiles||[];
+  openM('manage-group-modal');
+  await loadGroupMembersForManage();
+};
+window.loadGroupMembersForManage=async function(){
+  const gid=document.getElementById('manage-group-select').value; if(!gid) return;
+  const {data:members}=await sb.from('group_members').select('user_id').eq('group_id',gid);
+  const mSet=new Set((members||[]).map(m=>m.user_id));
+  document.getElementById('user-check-list').innerHTML=allProfiles.map(p=>`<div class="ucl-item"><input type="checkbox" id="uc-${p.id}" value="${p.id}" ${mSet.has(p.id)?'checked':''}/><label for="uc-${p.id}">${p.full_name||p.username}</label></div>`).join('');
+};
+window.saveGroupMembers=async function(){
+  const gid=document.getElementById('manage-group-select').value; if(!gid) return;
+  const boxes=document.querySelectorAll('#user-check-list input[type=checkbox]');
+  const selIds=[...boxes].filter(c=>c.checked).map(c=>c.value);
+  const {data:cur}=await sb.from('group_members').select('user_id').eq('group_id',gid);
+  const curSet=new Set((cur||[]).map(m=>m.user_id)), selSet=new Set(selIds);
+  const toAdd=selIds.filter(id=>!curSet.has(id));
+  const toRem=[...curSet].filter(id=>!selSet.has(id));
+  if(toAdd.length){
+    // Önce diğer gruplardan çıkar (bir kullanıcı sadece bir grupta olabilir)
+    for(const uid of toAdd){
+      await sb.from('group_members').delete().eq('user_id',uid).neq('group_id',gid);
+    }
+    const {error}=await sb.from('group_members').insert(toAdd.map(uid=>({group_id:gid,user_id:uid})));
+    if(error){toast('Ekleme hatası: '+error.message,'error');return;}
+  }
+  if(toRem.length){ const {error}=await sb.from('group_members').delete().eq('group_id',gid).in('user_id',toRem); if(error){toast('Çıkarma hatası: '+error.message,'error');return;} }
+  closeModal('manage-group-modal'); toast(`${toAdd.length} eklendi, ${toRem.length} çıkarıldı`,'success');
+  await loadMyGroup(); await loadHome();
+};
+
+// ── NAV ───────────────────────────────────────────────────────
+window.switchPage=function(name,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  btn.classList.add('active');
+  if(name==='home') loadHome();
+
+  if(name==='report') loadReport();
+};
+
+// ── RECOVERY URL HANDLER ─────────────────────────────────
+// Supabase şifre sıfırlama linkinden gelince hash'i yakala
+async function handleAuthCallback(){
+  const hash=window.location.hash;
+  const search=window.location.search;
+  const fullUrl=window.location.href;
+
+  // Hata kontrolü (#error=access_denied vs)
+  if(hash && hash.includes('error=')){
+    const params=new URLSearchParams(hash.replace(/^#/,''));
+    const errDesc=params.get('error_description')||params.get('error')||'Bilinmeyen hata';
+    const errCode=params.get('error_code')||'';
+    history.replaceState(null,'',window.location.pathname);
+    document.getElementById('app-loading').classList.add('hidden');
+    showScreen('login');
+    if(errCode==='otp_expired'){
+      setTimeout(()=>toast('Şifre sıfırlama linki süresi dolmuş. Lütfen tekrar talep edin.','error'),300);
+    } else {
+      setTimeout(()=>toast('Hata: '+decodeURIComponent(errDesc.replace(/\+/g,' ')),'error'),300);
+    }
+    return false;
+  }
+
+  // Yöntem 1: PKCE flow - ?code= parametresi (Supabase v2 yeni default)
+  if(search.includes('code=')){
+    const params=new URLSearchParams(search);
+    const code=params.get('code');
+    if(code){
+      try{
+        const {data,error}=await sb.auth.exchangeCodeForSession(code);
+        if(!error && data?.session){
+          history.replaceState(null,'',window.location.pathname);
+          // Recovery mi kontrol et - session'dan user metadata'ya bak
+          // ya da her code exchange'i recovery say (sadece reset linkinde gelir)
+          showPasswordUpdateModal();
+          return true;
+        }
+      }catch(e){ console.warn('exchangeCode error:',e); }
+    }
+  }
+
+  // Yöntem 2: Hash tabanlı (#access_token=...&type=recovery)
+  if(hash && hash.length > 1){
+    const params=new URLSearchParams(hash.replace(/^#/,''));
+    const type=params.get('type');
+    const accessToken=params.get('access_token');
+    const refreshToken=params.get('refresh_token')||'';
+    if(accessToken){
+      try{
+        const {error}=await sb.auth.setSession({access_token:accessToken,refresh_token:refreshToken});
+        if(!error){
+          history.replaceState(null,'',window.location.pathname);
+          if(type==='recovery' || !type) showPasswordUpdateModal();
+          return true;
+        }
+      }catch(e){ console.warn('setSession error:',e); }
+    }
+  }
+
+  // Yöntem 3: token_hash query string (?token_hash=...&type=recovery)
+  if(search.includes('token_hash')){
+    const params=new URLSearchParams(search);
+    const tokenHash=params.get('token_hash');
+    if(tokenHash){
+      try{
+        const {error}=await sb.auth.verifyOtp({token_hash:tokenHash,type:'recovery'});
+        if(!error){
+          history.replaceState(null,'',window.location.pathname);
+          showPasswordUpdateModal();
+          return true;
+        }
+      }catch(e){ console.warn('verifyOtp error:',e); }
+    }
+  }
+
+  return false;
+}
+
+function showPasswordUpdateModal(){
+  document.getElementById('app-loading').classList.add('hidden');
+  ['login-screen','main-app'].forEach(id=>document.getElementById(id).classList.remove('active'));
+  document.getElementById('pw-update-modal').classList.add('am');
+}
+
+window.doUpdatePassword=async function(){
+  const pw=document.getElementById('new-pw-input').value;
+  const pw2=document.getElementById('new-pw-confirm').value;
+  if(!pw||pw.length<6){toast('Şifre en az 6 karakter olmalı','error');return;}
+  if(pw!==pw2){toast('Şifreler eşleşmiyor','error');return;}
+  const {error}=await sb.auth.updateUser({password:pw});
+  if(error){toast('Hata: '+error.message,'error');return;}
+  document.getElementById('pw-update-modal').classList.remove('am');
+  toast('Şifre güncellendi! Giriş yapabilirsiniz. ✓','success');
+  await sb.auth.signOut();
+  showScreen('login');
+};
+
+// ── TEMA YÖNETİMİ ─────────────────────────────────────────
+const THEMES=['gece','zeytin','umman','gül','kum'];
+window.setTheme=function(theme){
+  document.body.className=document.body.className.replace(/theme-\S+/g,'').trim();
+  document.body.classList.add('theme-'+theme);
+  localStorage.setItem('risale-theme',theme);
+  THEMES.forEach(t=>{
+    const sw=document.getElementById('sw-'+t);
+    if(sw) sw.classList.toggle('active',t===theme);
+  });
+};
+function loadTheme(){
+  const saved=localStorage.getItem('risale-theme')||'gece';
+  setTheme(saved);
+}
+window.openGuide=function(){ openM('guide-modal'); };
+loadTheme();
+
+// onAuthStateChange BOOT'tan ÖNCE tanımlanmalı - event kaçırılmasın
+// PASSWORD_RECOVERY: Supabase yönlendirmesi sonrası gelir
+let bootDone = false;
+sb.auth.onAuthStateChange((event, session)=>{
+  if(event==='PASSWORD_RECOVERY'){
+    // Boot henüz çalışmadıysa loading'i gizle
+    document.getElementById('app-loading').classList.add('hidden');
+    showPasswordUpdateModal();
+    bootDone = true;
+  }
+});
+
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+boot();
+</script>
+</body>
+</html>
