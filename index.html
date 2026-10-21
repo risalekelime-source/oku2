@@ -91,16 +91,6 @@
     .sv{font-size:1.5rem;font-weight:700;line-height:1}
     .sv.green{color:var(--green)}.sv.red{color:var(--red)}
     .ssub{font-size:.72rem;color:var(--text2)}
-    .mi{display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:1px solid var(--border)}
-    .mi:last-child{border-bottom:none}
-    .mav{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--blue));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;color:#fff;flex-shrink:0}
-    .mav.late{background:linear-gradient(135deg,#ef4444,#f97316)}.mav.comp{background:linear-gradient(135deg,#f97316,#eab308)}.mav.ok{background:linear-gradient(135deg,#22c55e,#16a34a)}
-    .minfo{flex:1;min-width:0}
-    .mname{font-weight:600;font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .mmeta{font-size:.73rem;color:var(--text2)}
-    .badge{font-size:.62rem;font-weight:700;padding:3px 7px;border-radius:10px;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap}
-    .b-ok{background:rgba(74,222,128,.15);color:var(--green)}.b-late{background:rgba(248,113,113,.15);color:var(--red)}
-    .b-comp{background:rgba(251,191,36,.15);color:var(--yellow)}.b-none{background:rgba(96,165,250,.12);color:var(--blue)}
     .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px 18px;border-radius:var(--rs);font-weight:600;font-size:.88rem;cursor:pointer;transition:all .2s;border:none}
     .btn:active{transform:scale(.97)}.btn-primary{background:var(--accent);color:#1a1000}
     .btn-secondary{background:var(--bg3);color:var(--text);border:1px solid var(--border)}
@@ -109,18 +99,14 @@
     .btn-comp{background:#f5a800;color:#3a2600;border:none;font-weight:700;}
     .comp-day-btn:hover{background:var(--card2)!important;border-color:var(--yellow)!important;}
     .btn-ilave{background:#2563eb;color:#fff;border:none;font-weight:700;}
-    .btn-read.disabled-btn{opacity:.45;cursor:not-allowed;}
     .btn-block{width:100%;display:flex}.btn:disabled{opacity:.5;cursor:not-allowed}.btn-sm{padding:7px 12px;font-size:.78rem}
     .fr{margin-bottom:13px}
     .fr label{display:block;font-size:.72rem;color:var(--text2);margin-bottom:5px;font-weight:600;text-transform:uppercase;letter-spacing:.4px}
     .fr input,.fr select,.fr textarea{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--rs);padding:11px 13px;color:var(--text);font-size:.9rem;transition:border-color .2s;-webkit-appearance:none}
     .fr input:focus,.fr select:focus,.fr textarea:focus{outline:none;border-color:var(--accent)}
     .fr textarea{resize:vertical;min-height:70px}.fr select{cursor:pointer}
-    .tw{display:flex;align-items:center;justify-content:space-between}
-    .toggle{position:relative;width:46px;height:25px;background:var(--bg3);border-radius:13px;cursor:pointer;transition:background .2s;flex-shrink:0}
-    .toggle.on{background:var(--accent)}.toggle::after{content:'';position:absolute;top:3px;left:3px;width:19px;height:19px;background:#fff;border-radius:50%;transition:left .2s}.toggle.on::after{left:24px}
-    #log-modal,#add-user-modal,#add-book-modal,#manage-group-modal,#edit-group-modal,#ilave-modal,#ilave-pages-modal,#delete-user-modal,#guide-modal,#reset-pw-modal,#pw-update-modal{display:none}
-    #log-modal.am,#add-user-modal.am,#add-book-modal.am,#manage-group-modal.am,#edit-group-modal.am,#ilave-modal.am,#ilave-pages-modal.am,#delete-user-modal.am,#guide-modal.am,#reset-pw-modal.am,#pw-update-modal.am{display:block}
+    #log-modal,#add-user-modal,#add-book-modal,#manage-group-modal,#edit-group-modal,#ilave-modal,#ilave-pages-modal,#delete-user-modal,#guide-modal{display:none}
+    #log-modal.am,#add-user-modal.am,#add-book-modal.am,#manage-group-modal.am,#edit-group-modal.am,#ilave-modal.am,#ilave-pages-modal.am,#delete-user-modal.am,#guide-modal.am{display:block}
     .mo{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:200;display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px);animation:fadeIn .2s}
     .modal{background:var(--card);border-radius:var(--r) var(--r) 0 0;padding:22px 18px calc(var(--sb) + 22px);width:100%;max-width:480px;animation:slideUp .3s ease;max-height:90dvh;overflow-y:auto}
     .mhandle{width:34px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 18px;display:block}
@@ -144,7 +130,6 @@
     .ucl-item{display:flex;align-items:center;gap:10px;padding:10px 13px;border-bottom:1px solid var(--border);cursor:pointer}
     .ucl-item:last-child{border-bottom:none}.ucl-item input[type=checkbox]{width:16px;height:16px;accent-color:var(--accent);cursor:pointer}
     .ucl-item label{cursor:pointer;font-size:.88rem;flex:1}
-    .atag{font-size:.6rem;font-weight:700;padding:2px 7px;border-radius:9px;background:rgba(232,184,109,.15);color:var(--accent);margin-left:5px;vertical-align:middle}
     .group-item{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--border)}
     .group-item:last-child{border-bottom:none}.group-name{font-weight:600;font-size:.88rem}.group-meta{font-size:.72rem;color:var(--text2);margin-top:2px}
     .empty{text-align:center;padding:36px 16px;color:var(--text2)}.empty .eico{font-size:2.2rem;margin-bottom:10px}.empty p{font-size:.82rem;line-height:1.5}
@@ -154,9 +139,6 @@
     .theme-swatch{cursor:pointer;opacity:.7;transition:opacity .2s;}
     .theme-swatch:hover,.theme-swatch.active{opacity:1;}
     .theme-swatch.active div:first-child{outline:2px solid var(--accent);outline-offset:2px;}
-    .log-tabs{display:flex;gap:0;margin-bottom:18px;background:var(--bg3);border-radius:var(--rs);padding:3px}
-    .log-tab{flex:1;padding:9px;text-align:center;border-radius:8px;cursor:pointer;font-size:.85rem;font-weight:600;color:var(--text2);transition:all .2s}
-    .log-tab.active{background:var(--card);color:var(--accent)}
 
     body.theme-gece{
       --bg:#0a0e1a;--bg2:#0f1525;--bg3:#1a2035;
@@ -194,11 +176,6 @@
       --blue:#60a5fa;--purple:#c084fc;
       --text:#fce7f3;--text2:#b07090;
     }
-    body.theme-kum .login-card,body.theme-kum .modal{box-shadow:0 4px 24px rgba(0,0,0,0.15);}
-    body.theme-kum .fg input,body.theme-kum .fr input,body.theme-kum .fr select,body.theme-kum .fr textarea{background:#fff;border-color:rgba(0,0,0,0.15);color:var(--text);}
-    body.theme-kum .fg input:focus,body.theme-kum .fr input:focus{border-color:var(--accent);}
-    body.theme-kum .bottom-nav,body.theme-kum .app-header{background:rgba(245,240,232,0.95);border-color:rgba(0,0,0,0.1);}
-    body.theme-kum #toast{background:#fff;}
     body.theme-kum{
       --bg:#f5f0e8;--bg2:#ede8dc;--bg3:#e0d9cc;
       --card:#faf7f2;--card2:#f0ebe0;
@@ -386,6 +363,7 @@
 
 <div id="toast"></div>
 
+<!-- MODALLAR -->
 <div id="log-modal">
   <div class="mo" onclick="closeModal('log-modal')">
     <div class="modal" onclick="event.stopPropagation()">
@@ -393,9 +371,7 @@
       <div class="mtitle">◐ Telafi Okuması</div>
       <div style="font-size:.8rem;color:var(--text2);margin-bottom:12px;">Bu haftaki okunmayan günler:</div>
       <div id="comp-days-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:4px;"></div>
-      <div id="comp-empty" style="display:none;text-align:center;padding:24px;color:var(--text2);font-size:.85rem;">
-        🎉 Bu haftanın tüm günleri tamamlandı!
-      </div>
+      <div id="comp-empty" style="display:none;text-align:center;padding:24px;color:var(--text2);font-size:.85rem;">🎉 Tüm günler tamamlandı!</div>
     </div>
   </div>
 </div>
@@ -406,12 +382,8 @@
       <span class="mhandle"></span><div class="mtitle">👤 Yeni Kullanıcı</div>
       <div class="fr"><label>Ad Soyad</label><input type="text" id="new-user-fullname" placeholder="Ad Soyad"/></div>
       <div class="fr"><label>E-posta</label><input type="email" id="new-user-email" placeholder="kullanici@email.com"/></div>
-      <div class="fr">
-        <label>Varsayılan Şifre</label>
-        <input type="text" id="new-user-password" value="risale2025"/>
-        <div style="font-size:.7rem;color:var(--text2);margin-top:4px;">Kullanıcı giriş sonrası ayarlar'dan değiştirebilir</div>
-      </div>
-      <div class="fr"><label>Grup</label><select id="new-user-group"><option value="">— Grup seçin (opsiyonel) —</option></select></div>
+      <div class="fr"><label>Şifre</label><input type="text" id="new-user-password" value="risale2025"/></div>
+      <div class="fr"><label>Grup</label><select id="new-user-group"><option value="">— Seçin —</option></select></div>
       <div class="fr"><label>Rol</label><select id="new-user-role"><option value="user">Kullanıcı</option><option value="admin">Yönetici</option></select></div>
       <button class="btn btn-primary btn-block" onclick="createUser()">Kullanıcı Oluştur</button>
     </div>
@@ -422,11 +394,11 @@
   <div class="mo" onclick="closeModal('add-book-modal')">
     <div class="modal" onclick="event.stopPropagation()">
       <span class="mhandle"></span><div class="mtitle">📚 Yeni Kitap & Grup</div>
-      <div class="fr"><label>Kitap Adı</label><input type="text" id="book-title" placeholder="Kitabın adı"/></div>
-      <div class="fr"><label>Yazar</label><input type="text" id="book-author" placeholder="Yazar adı"/></div>
-      <div class="fr"><label>Toplam Sayfa</label><input type="number" id="book-pages" placeholder="Örn: 320" min="1"/></div>
-      <div class="fr"><label>Grup Adı</label><input type="text" id="group-name-input" placeholder="Okuma grubu adı"/></div>
-      <div class="fr"><label>Günlük Sayfa Hedefi</label><input type="number" id="group-daily-goal" placeholder="Örn: 20" min="1" value="20"/></div>
+      <div class="fr"><label>Kitap Adı</label><input type="text" id="book-title"/></div>
+      <div class="fr"><label>Yazar</label><input type="text" id="book-author"/></div>
+      <div class="fr"><label>Toplam Sayfa</label><input type="number" id="book-pages" min="1"/></div>
+      <div class="fr"><label>Grup Adı</label><input type="text" id="group-name-input"/></div>
+      <div class="fr"><label>Günlük Hedef</label><input type="number" id="group-daily-goal" value="20"/></div>
       <div class="fr"><label>Başlangıç Tarihi</label><input type="date" id="group-start-date"/></div>
       <button class="btn btn-primary btn-block" onclick="createBookGroup()">Oluştur</button>
     </div>
@@ -438,10 +410,7 @@
     <div class="modal" onclick="event.stopPropagation()">
       <span class="mhandle"></span><div class="mtitle">👥 Üye Ekle / Çıkar</div>
       <div class="fr"><label>Grup</label><select id="manage-group-select" onchange="loadGroupMembersForManage()"></select></div>
-      <div class="fr">
-        <label>Kullanıcılar <span style="color:var(--text2);font-weight:400;text-transform:none;">(seçili = grupta)</span></label>
-        <div class="user-check-list" id="user-check-list"></div>
-      </div>
+      <div class="fr"><label>Kullanıcılar</label><div class="user-check-list" id="user-check-list"></div></div>
       <button class="btn btn-primary btn-block" onclick="saveGroupMembers()">Kaydet</button>
     </div>
   </div>
@@ -450,14 +419,9 @@
 <div id="delete-user-modal">
   <div class="mo" onclick="closeModal('delete-user-modal')">
     <div class="modal" onclick="event.stopPropagation()">
-      <span class="mhandle"></span>
-      <div class="mtitle">🗑️ Kullanıcı Sil</div>
-      <div style="font-size:.82rem;color:var(--text2);margin-bottom:14px;">Silmek istediğiniz kullanıcıları seçin. Bu işlem geri alınamaz.</div>
-      <div class="fr">
-        <label>Kullanıcılar</label>
-        <div class="user-check-list" id="delete-user-check-list"></div>
-      </div>
-      <button class="btn btn-danger btn-block" onclick="deleteUser()">🗑️ Seçili Kullanıcıları Sil</button>
+      <span class="mhandle"></span><div class="mtitle">🗑️ Kullanıcı Sil</div>
+      <div class="fr"><div class="user-check-list" id="delete-user-check-list"></div></div>
+      <button class="btn btn-danger btn-block" onclick="deleteUser()">Sil</button>
     </div>
   </div>
 </div>
@@ -465,13 +429,9 @@
 <div id="ilave-modal">
   <div class="mo" onclick="closeModal('ilave-modal')">
     <div class="modal" onclick="event.stopPropagation()">
-      <span class="mhandle"></span>
-      <div class="mtitle">➕ İlave Okuma</div>
-      <div style="font-size:.8rem;color:var(--text2);margin-bottom:12px;">Okuma veya telafi girişi yapılan günler:</div>
-      <div id="ilave-days-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:4px;"></div>
-      <div id="ilave-empty" style="display:none;text-align:center;padding:24px;color:var(--text2);font-size:.85rem;">
-        📖 Son 7 günde okuma kaydı bulunamadı.
-      </div>
+      <span class="mhandle"></span><div class="mtitle">➕ İlave Okuma</div>
+      <div id="ilave-days-list" style="display:flex;flex-direction:column;gap:8px;"></div>
+      <div id="ilave-empty" style="display:none;text-align:center;padding:24px;color:var(--text2);">Kayıt bulunamadı.</div>
     </div>
   </div>
 </div>
@@ -479,49 +439,15 @@
 <div id="ilave-pages-modal">
   <div class="mo" onclick="closeModal('ilave-pages-modal')">
     <div class="modal" onclick="event.stopPropagation()">
-      <span class="mhandle"></span>
-      <div class="mtitle">➕ İlave Sayfa Gir</div>
+      <span class="mhandle"></span><div class="mtitle">➕ İlave Sayfa Gir</div>
       <input type="hidden" id="ilave-selected-date"/>
-      <div style="background:var(--bg3);border-radius:var(--rs);padding:12px 14px;margin-bottom:14px;">
-        <div style="font-size:.78rem;color:var(--text2);margin-bottom:2px;">Seçilen Gün</div>
+      <div style="background:var(--bg3);border-radius:var(--rs);padding:12px;margin-bottom:14px;">
+        <div style="font-size:.78rem;color:var(--text2);">Seçilen Gün</div>
         <div style="font-weight:600;" id="ilave-selected-label">—</div>
       </div>
-      <div class="fr"><label>İlave Sayfa Sayısı</label><input type="number" id="ilave-pages" placeholder="Örn: 10" min="1"/></div>
-      <div class="fr"><label>Not (opsiyonel)</label><textarea id="ilave-note" placeholder="Not..."></textarea></div>
-      <button class="btn btn-ilave btn-block" onclick="submitIlaveLog()">➕ İlave Okumayı Kaydet</button>
-    </div>
-  </div>
-</div>
-
-<div id="pw-update-modal">
-  <div class="mo" style="align-items:center;">
-    <div class="modal" onclick="event.stopPropagation()">
-      <span class="mhandle"></span>
-      <div class="mtitle">🔑 Yeni Şifre Belirle</div>
-      <div style="font-size:.82rem;color:var(--text2);margin-bottom:14px;">Şifre sıfırlama bağlantısından geldiniz. Yeni şifrenizi belirleyin.</div>
-      <div class="fr"><label>Yeni Şifre</label><input type="password" id="new-pw-input" placeholder="En az 6 karakter"/></div>
-      <div class="fr"><label>Şifre Tekrar</label><input type="password" id="new-pw-confirm" placeholder="Şifreyi tekrar girin"/></div>
-      <button class="btn btn-primary btn-block" onclick="doUpdatePassword()">Şifreyi Güncelle</button>
-    </div>
-  </div>
-</div>
-
-<div id="reset-pw-modal">
-  <div class="mo" onclick="closeModal('reset-pw-modal')">
-    <div class="modal" onclick="event.stopPropagation()">
-      <span class="mhandle"></span>
-      <div class="mtitle">🔑 Şifre Sıfırla</div>
-      <input type="hidden" id="reset-pw-uid"/>
-      <div style="background:var(--bg3);border-radius:var(--rs);padding:12px 14px;margin-bottom:14px;">
-        <div style="font-size:.78rem;color:var(--text2);margin-bottom:2px;">Kullanıcı</div>
-        <div style="font-weight:600;" id="reset-pw-name">—</div>
-      </div>
-      <div class="fr">
-        <label>Yeni Şifre</label>
-        <input type="text" id="reset-pw-input" placeholder="En az 6 karakter"/>
-        <div style="font-size:.7rem;color:var(--text2);margin-top:4px;">Kullanıcıya e-posta ile şifre sıfırlama bağlantısı gönderilecektir.</div>
-      </div>
-      <button class="btn btn-primary btn-block" onclick="doResetPassword()">🔑 Sıfırlama Maili Gönder</button>
+      <div class="fr"><label>Sayfa Sayısı</label><input type="number" id="ilave-pages" min="1"/></div>
+      <div class="fr"><label>Not</label><textarea id="ilave-note"></textarea></div>
+      <button class="btn btn-ilave btn-block" onclick="submitIlaveLog()">Kaydet</button>
     </div>
   </div>
 </div>
@@ -532,17 +458,17 @@
       <span class="mhandle"></span><div class="mtitle">✏️ Grubu Düzenle</div>
       <input type="hidden" id="edit-group-id"/>
       <div class="fr"><label>Grup Adı</label><input type="text" id="edit-group-name"/></div>
-      <div class="fr"><label>Günlük Sayfa Hedefi</label><input type="number" id="edit-group-goal" min="1"/></div>
+      <div class="fr"><label>Günlük Hedef</label><input type="number" id="edit-group-goal" min="1"/></div>
       <div class="fr"><label>Başlangıç Tarihi</label><input type="date" id="edit-group-start"/></div>
       <button class="btn btn-primary btn-block" onclick="saveGroupEdit()">Güncelle</button>
     </div>
   </div>
 </div>
 
+<!-- NEON / BACKEND MİMARİSİ SCRIPT -->
 <script type="module">
-let me = null, myProfile = null, myGroup = null, allProfiles = [], allGroups = [], notifTimer = null;
-let homeWeekOffset = 0;
-let reportOffset = 0;
+let me = null, myProfile = null, myGroup = null, allProfiles = [], allGroups = [];
+let homeWeekOffset = 0, reportOffset = 0;
 
 const DN = ['Pzt','Sal','Çar','Per','Cum','Cmt','Paz'];
 const MN = ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
@@ -550,37 +476,29 @@ const MNF = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağusto
 
 function todayStr(){
   const d=new Date();
-  const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), dd=String(d.getDate()).padStart(2,'0');
-  return `${y}-${m}-${dd}`;
-}
-
-// ── ANDROID / BRIDGE KÖPRÜSÜ ─────────────────────────────────
-async function loadUserData(currentGroup) {
-    try {
-        if (!me) return;
-        const targetGroup = currentGroup || myGroup;
-        
-        if (targetGroup) {
-            const gId = targetGroup.id || targetGroup.group_id || "";
-            const gGoal = targetGroup.daily_page_goal || targetGroup.page_goal || 20;
-
-            if (typeof window.AndroidBridge !== 'undefined') {
-                window.AndroidBridge.sendData(JSON.stringify({
-                    userId: me.id,
-                    userEmail: me.email,
-                    groupId: String(gId),
-                    goalPages: parseInt(gGoal) || 20
-                }));
-            }
-        }
-    } catch (e) {
-        console.log('loadUserData hatası:', e);
-    }
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
 
 function dateStr(d){
-  const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), dd=String(d.getDate()).padStart(2,'0');
-  return `${y}-${m}-${dd}`;
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+// ── NEON & ANDROID BRIDGE KÖPRÜSÜ ──────────────────────────
+async function loadUserData(currentGroup) {
+  try {
+    if (!me) return;
+    const targetGroup = currentGroup || myGroup;
+    if (targetGroup && typeof window.AndroidBridge !== 'undefined') {
+      window.AndroidBridge.sendData(JSON.stringify({
+        userId: me.id,
+        userEmail: me.email,
+        groupId: String(targetGroup.id || targetGroup.group_id || ''),
+        goalPages: parseInt(targetGroup.daily_page_goal || targetGroup.page_goal || 20)
+      }));
+    }
+  } catch (e) {
+    console.log('loadUserData hatası:', e);
+  }
 }
 
 let _tt; 
@@ -593,19 +511,18 @@ function toast(msg,type=''){
 function showScreen(name){
   document.getElementById('app-loading').classList.add('hidden');
   ['login-screen','main-app'].forEach(id=>document.getElementById(id).classList.remove('active'));
-  const m={login:'login-screen',app:'main-app'};
-  if(m[name]) document.getElementById(m[name]).classList.add('active');
+  if(name==='login') document.getElementById('login-screen').classList.add('active');
+  if(name==='app') document.getElementById('main-app').classList.add('active');
 }
 
 function openM(id){ document.getElementById(id).classList.add('am'); }
 window.closeModal=function(id){ document.getElementById(id).classList.remove('am'); };
 
-// ── AUTH (Neon / Backend tabanlı oturum yönetimi) ─────────────
+// ── OTURUM YÖNETİMİ (Neon Backend API) ────────────────────────
 async function boot(){
-  try{
+  try {
     const savedUser = localStorage.getItem('risale_user');
     const savedToken = localStorage.getItem('risale_token');
-    
     if(savedUser && savedToken){
       me = JSON.parse(savedUser);
       await loadProfile();
@@ -614,33 +531,28 @@ async function boot(){
     } else {
       showScreen('login');
     }
-  }catch(e){ 
-    console.error(e); 
-    showScreen('login'); 
+  } catch(e) {
+    showScreen('login');
   }
 }
 
-window.doLogin=async function(){
-  const email=document.getElementById('login-email').value.trim();
-  const password=document.getElementById('login-password').value;
-  const btn=document.getElementById('login-btn');
-  const err=document.getElementById('login-error');
-  
-  err.style.display='none'; btn.disabled=true; btn.textContent='Giriş yapılıyor...';
+window.doLogin = async function(){
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const btn = document.getElementById('login-btn');
+  const err = document.getElementById('login-error');
+
+  err.style.display = 'none'; btn.disabled = true; btn.textContent = 'Giriş yapılıyor...';
 
   try {
-    // Backend API'nize (örn. Cloudflare Worker veya Vercel API) istek atılır
     const res = await fetch('/api/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
     });
-
-    if(!res.ok) throw new Error('Giriş başarısız');
-    
+    if(!res.ok) throw new Error();
     const data = await res.json();
     me = data.user;
-    
     localStorage.setItem('risale_user', JSON.stringify(data.user));
     localStorage.setItem('risale_token', data.token);
 
@@ -648,13 +560,13 @@ window.doLogin=async function(){
     showScreen('app');
     initApp();
   } catch(e) {
-    err.style.display='block';
-    btn.disabled=false;
-    btn.textContent='Giriş Yap';
+    err.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Giriş Yap';
   }
 };
 
-window.doLogout=async function(){
+window.doLogout = function(){
   localStorage.removeItem('risale_user');
   localStorage.removeItem('risale_token');
   me = myProfile = myGroup = null;
@@ -667,64 +579,49 @@ async function loadProfile(){
     const res = await fetch(`/api/profile?userId=${me.id}`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
-    if(res.ok){
-      myProfile = await res.json();
-    }
-  } catch(e) {
-    console.log('Profil yüklenemedi', e);
-  }
+    if(res.ok) myProfile = await res.json();
+  } catch(e){}
 }
 
 function updateProfileDisplay(){
-  const name=myProfile?.full_name||myProfile?.username||'?';
-  const init=name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
-  document.getElementById('user-avatar').textContent=init;
-  const sa=document.getElementById('settings-avatar');
-  if(sa){ sa.textContent=init; }
-  document.getElementById('settings-fullname').textContent=myProfile?.full_name||'—';
-  document.getElementById('settings-username').textContent='@'+(myProfile?.username||'—');
-  document.getElementById('settings-email').textContent=me?.email||'—';
-  document.getElementById('edit-fullname').value=myProfile?.full_name||'';
-  const epEl=document.getElementById('edit-password'); if(epEl) epEl.value='';
+  const name = myProfile?.full_name || myProfile?.username || '?';
+  const init = name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  document.getElementById('user-avatar').textContent = init;
+  document.getElementById('settings-avatar').textContent = init;
+  document.getElementById('settings-fullname').textContent = myProfile?.full_name || '—';
+  document.getElementById('settings-username').textContent = '@' + (myProfile?.username || '—');
+  document.getElementById('settings-email').textContent = me?.email || '—';
+  document.getElementById('edit-fullname').value = myProfile?.full_name || '';
 }
 
 async function initApp(){
-  const init=(myProfile?.full_name||myProfile?.username||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
-  document.getElementById('user-avatar').textContent=init;
   updateProfileDisplay();
-  document.getElementById('header-user-name').textContent=myProfile?.full_name||myProfile?.username||'';
-  
-  if(myProfile?.role==='admin'){ 
-    const nav=document.getElementById('nav-admin'); 
-    if(nav) nav.style.display='flex'; 
-    await loadAdminGroups(); 
-    await loadAdminAllMembers(); 
+  document.getElementById('header-user-name').textContent = myProfile?.full_name || myProfile?.username || '';
+  if(myProfile?.role === 'admin'){
+    document.getElementById('nav-admin').style.display = 'flex';
+    await loadAdminGroups();
+    await loadAdminAllMembers();
   }
-  
   await loadMyGroup();
-  await loadHome(); 
+  await loadHome();
   await loadReport();
   setInterval(loadHome, 5*60*1000);
 }
 
-window.saveProfile=async function(){
-  const fullname=document.getElementById('edit-fullname').value.trim();
-  const password=document.getElementById('edit-password').value;
+window.saveProfile = async function(){
+  const fullname = document.getElementById('edit-fullname').value.trim();
+  const password = document.getElementById('edit-password').value;
   if(!fullname) return toast('Ad Soyad gerekli','error');
 
   const token = localStorage.getItem('risale_token');
   const res = await fetch('/api/profile', {
     method: 'PUT',
-    headers: { 
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
     body: JSON.stringify({ userId: me.id, full_name: fullname, password: password || undefined })
   });
 
-  if(!res.ok){ toast('Güncelleme başarısız','error'); return; }
-
-  myProfile={...myProfile, full_name: fullname};
+  if(!res.ok) return toast('Güncelleme başarısız','error');
+  myProfile = { ...myProfile, full_name: fullname };
   updateProfileDisplay();
   toast('Profil güncellendi! ✓','success');
 };
@@ -735,7 +632,6 @@ async function loadMyGroup(){
     const res = await fetch(`/api/my-group?userId=${me.id}`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
-    
     if(res.ok){
       const data = await res.json();
       if(data?.group){
@@ -743,221 +639,157 @@ async function loadMyGroup(){
         document.getElementById('header-group-name').textContent = myGroup.name;
         document.getElementById('header-group-label').textContent = myGroup.name;
         loadUserData(myGroup);
-      } else {
-        document.getElementById('header-group-name').textContent = 'Grup yok';
       }
     }
-  } catch (err) {
-    console.log("Grup yükleme hatası:", err);
-  }
+  } catch (err){}
 }
 
-window.changeHomeWeek=function(diff){
+window.changeHomeWeek = function(diff){
   homeWeekOffset += diff;
   loadHome();
 };
 
 async function loadHome(){
-  const now=new Date(), today=todayStr();
+  const now = new Date(), today = todayStr();
   const baseDate = new Date();
   baseDate.setDate(baseDate.getDate() + (homeWeekOffset * 7));
 
   if(!myGroup){
-    document.getElementById('week-body').innerHTML='<tr><td colspan="8" style="padding:20px;text-align:center;color:var(--text2);font-size:.82rem;">Henüz bir gruba atanmadınız</td></tr>';
-    ['stat-week','stat-total','stat-delay'].forEach(id=>document.getElementById(id).textContent='—');
+    document.getElementById('week-body').innerHTML='<tr><td colspan="8" style="padding:20px;text-align:center;color:var(--text2);">Henüz bir gruba atanmadınız</td></tr>';
     return;
   }
-  
-  const goal=myGroup.daily_page_goal;
-  const we=new Date(baseDate.getFullYear(),baseDate.getMonth(),baseDate.getDate());
-  const ws=new Date(we.getFullYear(),we.getMonth(),we.getDate()-6);
-  const wsStr=dateStr(ws), weStr=dateStr(we);
-  document.getElementById('week-range').textContent=`${ws.getDate()} ${MNF[ws.getMonth()]} – ${we.getDate()} ${MNF[we.getMonth()]} ${we.getFullYear()}`;
+
+  const goal = myGroup.daily_page_goal;
+  const we = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate());
+  const ws = new Date(we.getFullYear(), we.getMonth(), we.getDate() - 6);
+  const wsStr = dateStr(ws), weStr = dateStr(we);
+  document.getElementById('week-range').textContent = `${ws.getDate()} ${MNF[ws.getMonth()]} – ${we.getDate()} ${MNF[we.getMonth()]} ${we.getFullYear()}`;
 
   try {
     const token = localStorage.getItem('risale_token');
     const res = await fetch(`/api/home-data?groupId=${myGroup.id}&startDate=${wsStr}&endDate=${weStr}`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
-    
     if(!res.ok) return;
-    const { members, logs, userGoals } = await res.json();
+    const { members, logs } = await res.json();
 
-    let hHtml='<th class="name-cell">Üye</th>';
-    for(let i=0;i<7;i++){
-      const d=new Date(ws.getFullYear(),ws.getMonth(),ws.getDate()+i);
-      const ds=dateStr(d);
-      const dayName=DN[(d.getDay()+6)%7];
-      hHtml+=`<th class="${ds===today?'today-col':''}">${dayName}<br><span style="font-size:.65rem;opacity:.7">${d.getDate()}</span></th>`;
+    let hHtml = '<th class="name-cell">Üye</th>';
+    for(let i=0; i<7; i++){
+      const d = new Date(ws.getFullYear(), ws.getMonth(), ws.getDate() + i);
+      const ds = dateStr(d);
+      hHtml += `<th class="${ds===today?'today-col':''}">${DN[(d.getDay()+6)%7]}<br><span style="font-size:.65rem;opacity:.7">${d.getDate()}</span></th>`;
     }
-    document.getElementById('week-head').innerHTML=hHtml;
+    document.getElementById('week-head').innerHTML = hHtml;
 
-    const avatarColors=['#3fb950','#388bfd','#bc8cff','#c9a84c','#f85149','#58a6ff','#d29922','#7ee787'];
-    const memberColorMap={};
-    members.forEach((m,idx)=>{ memberColorMap[m.user_id]=avatarColors[idx%avatarColors.length]; });
-
-    const sorted=members.slice().sort((a,b)=>a.user_id===me.id?-1:b.user_id===me.id?1:(a.full_name||'').localeCompare(b.full_name||''));
-
-    const lMap={};
-    (logs||[]).forEach(l=>{ if(!lMap[l.user_id])lMap[l.user_id]={}; lMap[l.user_id][l.log_date]=l; });
-
-    let bHtml='';
-    sorted.forEach(m=>{
-      const isMe=m.user_id===me.id;
-      const name=m.full_name||m.username||'?';
-      const avColor=memberColorMap[m.user_id]||'#388bfd';
-      const avInit=name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
-      let row=`<tr class="${isMe?'me-row':''}"><td class="name-cell"><span class="row-avatar" style="background:${avColor}">${avInit}</span>${name}</td>`;
-      for(let i=0;i<7;i++){
-        const d=new Date(ws.getFullYear(),ws.getMonth(),ws.getDate()+i);
-        const ds=dateStr(d);
-        const future=ds>today;
-        const log=lMap[m.user_id]?.[ds];
-        let cls='dot-future',sym='';
-        if(!future){
-          if(log?.is_compensatory){cls='dot-yellow';sym='◐';}
-          else if(log&&log.pages_read>goal){cls='dot-blue';sym='➕';}
-          else if(log&&log.pages_read>=goal){cls='dot-green';sym='✓';}
-          else if(log&&log.pages_read>0){cls='dot-yellow';sym='~';}
-          else{cls='dot-red';sym='✗';}
-        }
-        row+=`<td class="${ds===today?'today-cell':''}"><div class="dot ${cls}">${sym}</div></td>`;
-      }
-      bHtml+=row+'</tr>';
+    const lMap = {};
+    (logs || []).forEach(l => {
+      if(!lMap[l.user_id]) lMap[l.user_id] = {};
+      lMap[l.user_id][l.log_date] = l;
     });
-    document.getElementById('week-body').innerHTML=bHtml;
 
-    // Kişisel istatistikler
-    const myLogs = logs.filter(l => l.user_id === me.id);
-    const groupStart = new Date(myGroup.start_date);
-    const userJoin = new Date(myProfile?.created_at || now);
-    const effectiveStart = userJoin > groupStart ? userJoin : groupStart;
-    effectiveStart.setHours(0,0,0,0);
-    
-    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const days = Math.max(0, Math.floor((todayStart - effectiveStart) / 86400000));
-    const totalGoal = (days + 1) * goal;
-    const totalRead = myLogs.reduce((s,l)=>s+l.pages_read,0);
-    const wkPages = myLogs.filter(l=>l.log_date>=wsStr&&l.log_date<=weStr).reduce((s,l)=>s+l.pages_read,0);
-    const diff = totalRead - totalGoal;
+    let bHtml = '';
+    (members || []).forEach(m => {
+      const isMe = m.user_id === me.id;
+      const name = m.full_name || m.username || '?';
+      const avInit = name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+      let row = `<tr class="${isMe?'me-row':''}"><td class="name-cell"><span class="row-avatar">${avInit}</span>${name}</td>`;
+      for(let i=0; i<7; i++){
+        const d = new Date(ws.getFullYear(), ws.getMonth(), ws.getDate() + i);
+        const ds = dateStr(d);
+        const log = lMap[m.user_id]?.[ds];
+        let cls = 'dot-future', sym = '';
+        if(ds <= today){
+          if(log?.is_compensatory){ cls = 'dot-yellow'; sym = '◐'; }
+          else if(log && log.pages_read > goal){ cls = 'dot-blue'; sym = '➕'; }
+          else if(log && log.pages_read >= goal){ cls = 'dot-green'; sym = '✓'; }
+          else if(log && log.pages_read > 0){ cls = 'dot-yellow'; sym = '~'; }
+          else { cls = 'dot-red'; sym = '✗'; }
+        }
+        row += `<td class="${ds===today?'today-cell':''}"><div class="dot ${cls}">${sym}</div></td>`;
+      }
+      bHtml += row + '</tr>';
+    });
+    document.getElementById('week-body').innerHTML = bHtml;
 
-    document.getElementById('stat-week').textContent=wkPages;
-    document.getElementById('stat-total').textContent=totalRead;
-    const de=document.getElementById('stat-delay'), dl=document.getElementById('stat-delay-label');
-    if(diff>=0){de.textContent='+'+diff;de.className='sv green';dl.textContent='sayfa';}
-    else{de.textContent=diff;de.className='sv red';dl.textContent='sayfa';}
-
-  } catch(e) {
-    console.log('Home veri çekme hatası', e);
-  }
+    const myLogs = (logs || []).filter(l => l.user_id === me.id);
+    const wkPages = myLogs.filter(l => l.log_date >= wsStr && l.log_date <= weStr).reduce((s,l)=>s+l.pages_read,0);
+    document.getElementById('stat-week').textContent = wkPages;
+  } catch(e){}
 }
 
-window.changeReportOffset=function(diff){
+window.changeReportOffset = function(diff){
   reportOffset += diff;
   loadReport();
 };
 
 async function loadReport(){
-  // Rapor ekranı işlemleri API üzerinden Neon sorgularıyla beslenecek şekilde yapılandırılabilir.
-  // Mevcut yapıda doğrudan backend üzerinden veri çekilecek şekilde güncellenmiştir.
+  const token = localStorage.getItem('risale_token');
+  try {
+    const res = await fetch(`/api/report?userId=${me.id}&groupId=${myGroup?.id}&offset=${reportOffset}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if(res.ok){
+      const data = await res.json();
+      document.getElementById('my-weekly-report').innerHTML = data.html || '';
+    }
+  } catch(e){}
 }
 
-window.openIlaveModal=async function(){
-  if(!myGroup) return toast('Aktif grup bulunamadı','error');
-  openM('ilave-modal');
+window.openIlaveModal = function(){ openM('ilave-modal'); };
+window.openCompModal = function(){ openM('log-modal'); };
+
+window.logToday = async function(){
+  if(!myGroup) return toast('Grup bulunamadı','error');
+  await saveLog(todayStr(), myGroup.daily_page_goal, '', false);
 };
 
-window.openIlavePagesModal=function(date, label){
-  closeModal('ilave-modal');
-  document.getElementById('ilave-selected-date').value=date;
-  document.getElementById('ilave-selected-label').textContent=label;
-  document.getElementById('ilave-pages').value='';
-  document.getElementById('ilave-note').value='';
-  openM('ilave-pages-modal');
-};
-
-window.submitIlaveLog=async function(){
-  const date=document.getElementById('ilave-selected-date').value;
-  const pages=parseInt(document.getElementById('ilave-pages').value);
-  const note=document.getElementById('ilave-note').value.trim();
-  if(!date) return toast('Tarih seçin','error');
-  if(!pages||pages<1) return toast('Sayfa sayısı girin','error');
-
-  const token = localStorage.getItem('risale_token');
-  const res = await fetch('/api/reading-logs', {
-    method: 'POST',
-    headers: { 
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
-    body: JSON.stringify({ userId: me.id, groupId: myGroup.id, date, pages, note, isCompensatory: false })
-  });
-
-  if(!res.ok){ toast('Kayıt hatası','error'); return; }
+window.submitIlaveLog = async function(){
+  const date = document.getElementById('ilave-selected-date').value;
+  const pages = parseInt(document.getElementById('ilave-pages').value);
+  const note = document.getElementById('ilave-note').value.trim();
+  if(!pages || pages < 1) return toast('Sayfa girin','error');
+  await saveLog(date, pages, note, false);
   closeModal('ilave-pages-modal');
-  toast(`+${pages} sayfa ilave kaydedildi! ➕`,'success');
-  await loadHome();
-};
-
-window.logToday=async function(){
-  if(!myGroup) return toast('Aktif grup bulunamadı','error');
-  const today=todayStr();
-  await saveLog(today, myGroup.daily_page_goal, '', false);
-};
-
-window.openCompModal=async function(){
-  if(!myGroup) return toast('Aktif grup bulunamadı','error');
-  openM('log-modal');
-};
-
-window.submitCompLog=async function(date){
-  if(!date) return;
-  closeModal('log-modal');
-  await saveLog(date, myGroup.daily_page_goal, '', true);
 };
 
 async function saveLog(date, pages, note, isComp){
   const token = localStorage.getItem('risale_token');
   const res = await fetch('/api/reading-logs', {
     method: 'POST',
-    headers: { 
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
     body: JSON.stringify({ userId: me.id, groupId: myGroup.id, date, pages, note, isCompensatory: isComp })
   });
 
-  if(!res.ok){ toast('Kayıt hatası','error'); return; }
-  toast(isComp?'Telafi kaydedildi! ◐':'Okuma kaydedildi! ✓','success');
+  if(!res.ok) return toast('Kayıt başarısız','error');
+  toast('Okuma kaydedildi! ✓','success');
   await loadHome();
 }
 
 async function loadAdminAllMembers(){
-  const el=document.getElementById('admin-all-members');
-  if(!el) return;
-  // Yönetim paneli listelemeleri backend API üzerinden Neon veritabanından çekilir.
+  const token = localStorage.getItem('risale_token');
+  try {
+    const res = await fetch('/api/admin/members', { headers: { 'Authorization': `Bearer ${token}` } });
+    if(res.ok){
+      const data = await res.json();
+      document.getElementById('admin-all-members').innerHTML = data.html || '';
+    }
+  } catch(e){}
 }
 
 async function loadAdminGroups(){
   const token = localStorage.getItem('risale_token');
   try {
-    const res = await fetch('/api/groups', {
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
+    const res = await fetch('/api/admin/groups', { headers: { 'Authorization': `Bearer ${token}` } });
     if(res.ok){
       allGroups = await res.json();
-      const el=document.getElementById('admin-groups-list');
-      if(!allGroups.length){el.innerHTML='<div style="font-size:.82rem;color:var(--text2);">Henüz grup yok</div>';return;}
-      el.innerHTML=allGroups.map(g=>`<div class="group-item">
-        <div style="flex:1;min-width:0;"><div class="group-name">${g.name}</div><div class="group-meta">${g.book_title||'—'} · ${g.daily_page_goal} s/gün</div></div>
+      document.getElementById('admin-groups-list').innerHTML = allGroups.map(g => `<div class="group-item">
+        <div><div class="group-name">${g.name}</div><div class="group-meta">${g.daily_page_goal} s/gün</div></div>
       </div>`).join('');
     }
-  } catch(e) {
-    console.log('Gruplar yüklenemedi', e);
-  }
+  } catch(e){}
 }
 
-window.switchPage=function(name,btn){
+window.switchPage = function(name, btn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
@@ -967,20 +799,21 @@ window.switchPage=function(name,btn){
 };
 
 const THEMES=['gece','zeytin','umman','gül','kum'];
-window.setTheme=function(theme){
-  document.body.className=document.body.className.replace(/theme-\S+/g,'').trim();
+window.setTheme = function(theme){
+  document.body.className = document.body.className.replace(/theme-\S+/g,'').trim();
   document.body.classList.add('theme-'+theme);
-  localStorage.setItem('risale-theme',theme);
+  localStorage.setItem('risale-theme', theme);
   THEMES.forEach(t=>{
-    const sw=document.getElementById('sw-'+t);
-    if(sw) sw.classList.toggle('active',t===theme);
+    const sw = document.getElementById('sw-'+t);
+    if(sw) sw.classList.toggle('active', t===theme);
   });
 };
+
 function loadTheme(){
-  const saved=localStorage.getItem('risale-theme')||'gece';
-  setTheme(saved);
+  setTheme(localStorage.getItem('risale-theme') || 'gece');
 }
-window.openGuide=function(){ openM('guide-modal'); };
+
+window.openGuide = function(){ openM('guide-modal'); };
 loadTheme();
 
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
