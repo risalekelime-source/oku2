@@ -1,7 +1,7 @@
 {
-  "name": "Risale Okuma Takip",
-  "short_name": "Risale Okuma",
-  "description": "Risale-i Nur okuma takip programı",
+  "name": "Risale Okuma Takip v.3",
+  "short_name": "Risale Okuma v.3",
+  "description": "Risale-i Nur Okuma Takip Programı v.3",
   "start_url": "/oku/",
   "display": "standalone",
   "background_color": "#0a0e1a",
