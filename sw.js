@@ -1,4 +1,4 @@
-const CACHE = 'risale-v14';
+const CACHE = 'risale-v34';
 const ASSETS = ['/oku2/', '/oku2/index.html', '/oku2/manifest.json', '/oku2/icon-192.png', '/oku2/icon-512.png'];
 
 // ── CLOUDFLARE WORKER / D1 API CONFIG ──────────────────────
