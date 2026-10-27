@@ -1,5 +1,5 @@
 const CACHE = 'risale-v14';
-const ASSETS = ['/oku/', '/oku/index.html', '/oku/manifest.json', '/oku/icon-192.png', '/oku/icon-512.png'];
+const ASSETS = ['/oku2/', '/oku2/index.html', '/oku2/manifest.json', '/oku2/icon-192.png', '/oku2/icon-512.png'];
 
 // ── CLOUDFLARE WORKER / D1 API CONFIG ──────────────────────
 const WORKER_API_URL = 'https://risale-takip-api.risalekelime.workers.dev'; // index.html'deki WORKER_API_URL ile aynı olmalı
@@ -43,9 +43,9 @@ self.addEventListener('notificationclick', e => {
   e.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
       for (const c of list) {
-        if (c.url.includes('/oku/') && 'focus' in c) return c.focus();
+        if (c.url.includes('/oku2/') && 'focus' in c) return c.focus();
       }
-      return clients.openWindow('/oku/');
+      return clients.openWindow('/oku2/');
     })
   );
 });
@@ -144,7 +144,7 @@ async function checkNotifFromSW(cfg) {
 
 async function showReminder(title = '📖 Risale Okuma Takip', body = 'Bugünkü okumanı kaydetmeyi unutma!') {
   return self.registration.showNotification(title, {
-    body, icon: '/oku/icon-192.png', badge: '/oku/icon-192.png',
+    body, icon: '/oku2/icon-192.png', badge: '/oku2/icon-192.png',
     tag: 'daily-reminder', vibrate: [200, 100, 200]
   });
 }
