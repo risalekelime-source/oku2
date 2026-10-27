@@ -2,7 +2,7 @@
   "name": "Risale Okuma Takip v.3",
   "short_name": "Risale Okuma v.3",
   "description": "Risale-i Nur Okuma Takip Programı v.3",
-  "start_url": "/oku/",
+  "start_url": "/oku2/",
   "display": "standalone",
   "background_color": "#0a0e1a",
   "theme_color": "#0a0e1a",
@@ -39,6 +39,6 @@
   ],
   "lang": "tr",
   "dir": "ltr",
-  "scope": "/oku/",
-  "id": "/oku/"
+  "scope": "/oku2/",
+  "id": "/oku2/"
 }
